@@ -37,8 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
-# personal claude toolkit (not project code)
-.claude/skills/
+# personal claude toolkit (not project code) — only workflow rules are tracked
+.claude/*
+!.claude/rules/
 
 # typescript
 *.tsbuildinfo
