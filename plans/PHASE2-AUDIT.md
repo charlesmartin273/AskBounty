@@ -107,6 +107,16 @@ Chuẩn bị: `npm run dev` (port 3000 hoặc 3002 — xem console). Ví browser
    - **Thấy:** hộp vàng "This question is not live yet… not accepting answers" — KHÔNG có badge bounty.
 9. (Tuỳ chọn) Mở Supabase Table editor → bảng `questions`: row mới có `job_id`, `net_payout`, `platform_fee_bp`, `evaluator_fee_bp`, `create_tx`, `fund_tx`, `status='open'`.
 
+## Manual test result (user, 2026-07-21)
+
+User ran the browser flow with their OWN wallet (`0x3b4691…87b3`) — PASSED end-to-end after 3 real-world hiccups, each fixed same-day:
+
+1. `fund` revert with truncated error → error display now shows full revert reason (`9f0dea9`). Root cause of that revert: MetaMask custom spending cap below budget.
+2. Browser `allowance` read hit public-RPC rate limit → wagmi now uses the hardened retry+fallback transport (`aa96086`).
+3. `fund` submission rate-limited at MetaMask's RPC (outside app control) → resolved by wait-and-retry; Blockscout proxy RPC (`https://testnet.arcscan.app/api/eth-rpc`) verified to accept `eth_sendRawTransaction` as a wallet-side fallback.
+
+Wizard resilience proven live: mid-flow failures at step 3 resumed cleanly, no duplicate jobs, no funds lost. Final state verified in DB: `ql0fb6rnhal2` status=open, budget=10, net_payout=10 (snapshot), job 159058, fund_tx `0x919a014e…79b344`. Abandoned 20-USDC draft (`qv7m5g5m307r`, cap-capped approve) stays draft/hidden with zero escrowed — exactly the designed behavior.
+
 ## Unresolved questions
 
 None blocking. Carry-over notes for Phase 3 unchanged (nonce serialization, double-accept guard, PaymentReleased-derived forward, fail-closed eval).
