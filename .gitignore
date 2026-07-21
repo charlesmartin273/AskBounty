@@ -40,6 +40,7 @@ yarn-error.log*
 # personal claude toolkit (not project code) — only workflow rules are tracked
 .claude/*
 !.claude/rules/
+.claude/.env.example
 
 # typescript
 *.tsbuildinfo
