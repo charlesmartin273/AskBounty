@@ -133,7 +133,11 @@ export function useFundingWizard(questionId: string) {
       }
       await refresh();
     } catch (err) {
-      setS((p) => ({ ...p, error: err instanceof Error ? err.message.split("\n")[0] : String(err) }));
+      // viem puts the revert reason on line 2 — keep the first lines, not just one
+      const msg = err instanceof Error
+        ? err.message.split("\n").filter(Boolean).slice(0, 3).join(" ")
+        : String(err);
+      setS((p) => ({ ...p, error: msg }));
     } finally {
       setS((p) => ({ ...p, busy: false, busyLabel: "" }));
     }
