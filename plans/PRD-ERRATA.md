@@ -36,6 +36,12 @@ Findings where `AskBounty-PRD-EN.md` contradicts observable onchain/external rea
 - **Reality (verified ABI):** `complete(uint256, bytes32 reason, bytes optParams)` — reason is **bytes32**, not string; `setBudget`/`fund`/`submit` all take a trailing `bytes optParams` (pass `0x`).
 - **Correction (implemented):** `lib/chain/abi-agentic-commerce.ts` hand-written from the live Arcscan ABI; `toBytes32Reason()` truncates reasons to 31 bytes.
 
+## E5: Evaluation LLM = Gemini free tier, not Claude API — 2026-07-21
+
+- **PRD says (§3, §7):** evaluation via `callClaude` / Claude API.
+- **Reality (user decision):** demo runs on **Google Gemini free tier** (`gemini-2.5-flash`) — reason: cost. Not an onchain/external-fact conflict; recorded here per user instruction for transparency with judges.
+- **Correction (user-approved):** `lib/eval/llm-client.ts` replaces the Claude client with the SAME interface (`callLlm({system,user,schema?}) → parsed JSON`) and the SAME verdict schema (`topics[]`, `overall`, `reasoning`) enforced via Gemini structured output. Env `ANTHROPIC_API_KEY` → `GEMINI_API_KEY`. Switching providers back = edit that one file only (`@anthropic-ai/sdk` kept in deps for easy revert). Eval failures (429/401/timeout) must surface as "evaluation pending, retrying" + manual retry button — never a silent hang (Phase 3 requirement).
+
 ## New finding: zero-budget `fund` succeeds — 2026-07-20
 
 - `fund(jobId)` on a job whose budget was never set succeeds without any approve (`transferFrom(0)`), moving the job to Funded with 0 escrowed. App guard needed in Phase 2: a question is "live" only when `getJob(jobId).budget > 0` AND status = Funded — never trust status alone.

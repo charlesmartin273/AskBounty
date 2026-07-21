@@ -6,7 +6,9 @@ Built for the "Build on Arc" hackathon, Agentic Economy track.
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supabase (service-role writes only, RLS denies client writes) · Claude API · Vercel.
+Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supabase (service-role writes only, RLS denies client writes) · **Google Gemini API (free tier)** for answer evaluation · Vercel.
+
+> **LLM provider note:** the PRD specifies the Claude API for evaluation; the demo runs on Gemini free tier for cost reasons (PRD-ERRATA E5). The eval client is provider-swappable — switching back touches only `lib/eval/llm-client.ts` (same input/output interface, structured JSON verdict: `topics[]`, `overall`, `reasoning`).
 
 | Item | Value |
 |---|---|
@@ -25,6 +27,7 @@ We therefore run **Option B**: the AskBounty agent wallet is the fixed provider 
 - Every receipt shows **both** transactions (escrow→agent and agent→winner) with Arcscan links, so anyone can verify the agent kept nothing beyond the protocol's evaluator fee.
 - The winner receives **exactly** the net amount displayed on the question page before anyone wrote a word ("Bounty 20 USDC · winner receives X.XX USDC after protocol fees" — computed from live `platformFeeBP`/`evaluatorFeeBP` reads, never hardcoded). Forward-hop gas is absorbed by the agent wallet, never deducted from the winner.
 - The trust assumption is: the agent wallet forwards the payout honestly. A payout state machine (`accepted → payout_pending → paid`) with cron retries and a visible "payout pending" status makes any failure loud, not silent.
+- Pending answers are publicly readable; acceptance order follows submission order, so copying a pending answer cannot outrank the original. Private submissions are a v2 item.
 
 ## Getting started
 

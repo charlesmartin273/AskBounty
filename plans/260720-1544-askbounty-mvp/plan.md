@@ -23,7 +23,7 @@ Post a question, lock USDC budget in ERC-8183 escrow (AgenticCommerce on Arc Tes
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supabase (writes only via API routes w/ service-role key; RLS denies client writes) · Claude API · Vercel + Vercel Cron.
+Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supabase (writes only via API routes w/ service-role key; RLS denies client writes) · Gemini API free tier (eval LLM — PRD-ERRATA E5, provider-swappable via `lib/eval/llm-client.ts`) · Vercel + Vercel Cron.
 
 ## Phases
 

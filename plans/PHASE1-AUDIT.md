@@ -81,7 +81,7 @@ Date: 2026-07-20 · Status: **PASS (onchain gate)** — 2 env items pending user
 | `.env.example` + `.env.local` | ✅ (throwaway keys auto-generated) |
 | Chain config + ABIs + viem clients | ✅ |
 | Escrow service (reads/writes/net/forward) | ✅ |
-| `lib/supabase/schema.sql` + server client | ✅ written · ⚠️ **NOT applied — no Supabase project credentials in env** |
+| `lib/supabase/schema.sql` + server client | ✅ applied 2026-07-21 (project `lazafevtjtzhutogvxej`) — verified: both tables + extended cols exist, anon INSERT → 401 `42501` RLS violation, service-role INSERT → 201, anon SELECT → 200 |
 | Claude eval client | ✅ written · ⚠️ not exercised — **no `ANTHROPIC_API_KEY` in env** (not needed until Phase 3) |
 | Dry-run full lifecycle PASS | ✅ |
 | Fee BPs + setBudget caller in errata | ✅ |
@@ -90,7 +90,7 @@ Date: 2026-07-20 · Status: **PASS (onchain gate)** — 2 env items pending user
 
 ## Unresolved questions (need user input)
 
-1. Supabase project URL + anon key + service-role key → to apply `schema.sql` (blocking Phase 2 DB work, not the onchain gate).
-2. `ANTHROPIC_API_KEY` + `CRON_SECRET` values for `.env.local` (needed by Phase 3).
-3. Agent wallet for real use: keep the generated `EVALUATOR_PRIVATE_KEY` throwaway as THE agent wallet going forward, or replace with a user-provided key? (Current one works and holds ~1.99 USDC gas.)
-4. Review M4: pending answer bodies publicly readable via anon key → answer sniping (copy + improve + resubmit). Accept for MVP demo (first-pass-wins mostly mitigates) or hide pending bodies (`USING (status <> 'pending')`)?
+1. ~~Supabase credentials~~ — RESOLVED 2026-07-21: env filled, schema applied + RLS verified.
+2. ~~`ANTHROPIC_API_KEY`~~ → replaced by `GEMINI_API_KEY` (PRD-ERRATA E5), filled 2026-07-21. ~~`CRON_SECRET`~~ — filled 2026-07-21.
+3. ~~Agent wallet~~ — RESOLVED 2026-07-21 (user): KEEP throwaway `0x8065E80AE2155412d896A5FF761933F8D129c200` as the official agent wallet for the whole hackathon (testnet only, clean dry-run history on Arcscan for judges). Key stays in gitignored `.env.local`.
+4. ~~Review M4~~ — RESOLVED 2026-07-21 (user): ACCEPTED for MVP. First-pass-wins by `created_at` means a copied answer always evaluates after the original, so sniping cannot outrank it. Limitation line added to README; private submissions = v2.
