@@ -45,18 +45,23 @@ async function main() {
     `net(333333, 2.5%+2.5%)=${net} (expect 316667), net(0)=0`,
   );
 
-  // --- Edge 2 (in-process): bytes32 reason with long unicode input
+  // --- Edge 2 (in-process): bytes32 reason with long unicode input,
+  // including a truncation boundary that splits a multibyte char (review H1)
   let e2 = true;
   let e2detail = "";
   try {
-    const r = toBytes32Reason("đánh giá đạt ✓ — very long reason ".repeat(10));
-    e2 = r.length === 66; // 0x + 32 bytes
-    e2detail = `len=${r.length} (expect 66)`;
+    const inputs = [
+      "đánh giá đạt ✓ — very long reason ".repeat(10),
+      "a".repeat(30) + "é", // byte 31/32 lands mid-char — H1 repro
+      "a".repeat(31) + "✓", // 3-byte char split at byte 32
+    ];
+    e2 = inputs.every((s) => toBytes32Reason(s).length === 66); // 0x + 32 bytes
+    e2detail = `all ${inputs.length} inputs -> 32-byte value`;
   } catch (err) {
     e2 = false;
     e2detail = String(err);
   }
-  record("toBytes32Reason long unicode", e2, e2detail);
+  record("toBytes32Reason unicode + split boundary", e2, e2detail);
 
   const publicClient = createPublicClient({
     chain: arcTestnet,

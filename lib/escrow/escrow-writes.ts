@@ -1,6 +1,7 @@
 import {
+  bytesToHex,
+  pad,
   parseEventLogs,
-  stringToHex,
   type Account,
   type Chain,
   type PublicClient,
@@ -22,11 +23,12 @@ interface Ctx {
 const NO_OPT_PARAMS = "0x" as const;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
 
-// complete()/reject() reasons are bytes32 onchain (not string) — truncate to
-// 31 bytes so stringToHex never throws on long reasons.
+// complete()/reject() reasons are bytes32 onchain (not string) — truncate at
+// the BYTE level and right-pad. No string round-trip: decoding a dangling
+// multibyte UTF-8 sequence would inject U+FFFD and overflow 32 bytes.
 export function toBytes32Reason(reason: string): `0x${string}` {
-  const truncated = new TextEncoder().encode(reason).slice(0, 31);
-  return stringToHex(new TextDecoder().decode(truncated), { size: 32 });
+  const truncated = new TextEncoder().encode(reason).slice(0, 32);
+  return pad(bytesToHex(truncated), { size: 32, dir: "right" });
 }
 
 async function writeAndWait(ctx: Ctx, send: () => Promise<`0x${string}`>) {
