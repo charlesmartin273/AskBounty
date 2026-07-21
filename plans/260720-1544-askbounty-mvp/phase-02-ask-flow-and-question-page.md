@@ -8,7 +8,7 @@
 
 ## Overview
 - **Priority:** P1
-- **Status:** pending
+- **Status:** audit-pass — awaiting user approval (evidence: `plans/PHASE2-AUDIT.md`)
 - **Description:** Build the criteria-builder ask form, the 3-step resumable funding wizard (createJob → setBudget → approve+fund), and the public question page with the upfront net-payout badge, criteria display, countdown, and Arcscan verify link.
 
 ## Key Insights
