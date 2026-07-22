@@ -1,5 +1,6 @@
 import "server-only";
 import { evaluateAnswer } from "../eval/evaluate-answer";
+import type { QuestionContext } from "../eval/llm-review-prompt";
 import { acceptAnswer, type PayoutOutcome } from "../payout/accept-answer";
 import type { Criteria } from "../questions/criteria-schema";
 import { getSupabaseServerClient } from "../supabase/server-client";
@@ -24,9 +25,10 @@ type Db = ReturnType<typeof getSupabaseServerClient>;
 export async function processAnswerEvaluation(
   answer: AnswerRow,
   criteria: Criteria,
+  question: QuestionContext,
 ): Promise<ProcessedEvaluation> {
   const db = getSupabaseServerClient();
-  const evalOutcome = await evaluateAnswer(answer.body, criteria);
+  const evalOutcome = await evaluateAnswer(answer.body, criteria, question);
   const evalResults: EvalResultsJson = {
     results: evalOutcome.results,
     error: evalOutcome.outcome === "error" ? evalOutcome.error : null,

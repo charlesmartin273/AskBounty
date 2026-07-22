@@ -1,6 +1,6 @@
 # PHASE 3 AUDIT — Answer Flow + Evaluation Agent + Payout
 
-2026-07-22 · Status: **PASS** (8 E2E scripts, 58 assertions, all green on real Arc Testnet + real Gemini + real Supabase) — awaiting user approval.
+2026-07-22 · Status: **PASS** (9 E2E scripts, 66 assertions, all green on real Arc Testnet + real Gemini + real Supabase) — awaiting user approval.
 
 Scope (user-expanded): signed answer submission → objective checks → Gemini eval → first-pass-wins accept → **onchain payout (submit → complete → forward) → dual-tx receipt**. Cron sweep / refund / browse stay in Phase 4.
 
@@ -50,13 +50,16 @@ B complete 0xf3c52a…dbbb3e23 · B forward 0xdb2a14…294235c5
 
 **M2 forward-per-event** — `e2e-phase3-forward-event-amount.ts` ✱ — 4/4 PASS with distinctive budget **1.234567 USDC**: `PaymentReleased.amount` (parsed independently from the complete receipt) == recorded paid.amount == winner balance delta == net_payout snapshot == 1.234567 exactly (post-fix run job 159118: complete `0xf0fea23b5b3cb5dabd55f0d668ba9aa49b0f59dacd0438c07e6faaded3d8cdca`, forward `0xf4a2f7dd0e27a7722610cb6dd491634d11079ff5d0aec1f7bf27550194c21458`; identical pre-fix run on job 159064).
 
-**M3 fail-closed verdict** — `e2e-phase3-fail-closed-verdict.ts` ✱ — 17/17 PASS. 11 malformed LLM outputs through the REAL evaluate-answer path (injected transport) → all `error`, never accepted; `overall=true` with uncovered topic → demoted to fail; LlmEvalError 429→retryable / 401→not; objective gate short-circuits before LLM; C1 delimiter neutralization verified; valid verdict control → pass.
+**M3 fail-closed verdict** — `e2e-phase3-fail-closed-verdict.ts` ✱ — 21/21 PASS. 11 malformed LLM outputs through the REAL evaluate-answer path (injected transport) → all `error`, never accepted; `overall=true` with uncovered topic → demoted to fail; LlmEvalError 429→retryable / 401→not; objective gate short-circuits before LLM on BOTH branches (topics + empty-topics); delimiter neutralization verified on BOTH blocks (answer-side C1 + asker-side, exactly 4 framing delimiters survive); empty-topics prompt contains question text + direct_answer criterion; valid verdict controls → pass.
 
 ### R3 Gemini failure — `e2e-phase3-eval-error-retry.ts` — 5/5 PASS (yêu cầu 3)
 Second server started with `GEMINI_API_KEY=invalid-key-for-r3-test` (same DB). Submit through it → Gemini 400 API_KEY_INVALID → answer stays `pending` with error surfaced; public page shows **"evaluation pending, retrying"** + Retry button; manual retry through the healthy server → accepted + paid (complete `0x62a2cf…753afcd`, forward `0x561a66…4e53dbd7`). No silent hang at any point.
 
 ### Discrepancy rule "số vào bằng số ra" — `e2e-phase3-payout-discrepancy.ts` — 4/4 PASS
 Fee drift cannot be forced onchain (no admin role) → simulated by tampering the DB snapshot to 0.75 while escrow releases 1.000000. Result: winner received the FULL 1.000000 (agent retained nothing), `paid.discrepancy={released:"1", expectedNet:"0.75"}` recorded, receipt shows "Fee change detected" with both numbers. (complete `0x4e30b8…c208949`, forward `0x4ab0bc…6012c378`)
+
+### Empty-topics eval branch (manual-test finding, permanent regression E2E)
+`e2e-phase3-empty-topics-eval.ts` — 4/4 PASS (question qmocpdikler7, job 159122, criteria `{minWords:1, topics:[]}`): terse WRONG answer "21" → failed by the LLM on **correctness** ("mathematically incorrect. The correct sum of 9 and 10 is 19"), objective checks ran first and passed independently; terse CORRECT answer "19" → **accepted + paid** (complete `0x9a183d96…b7d7e8`, forward `0xe23f0709…a88a3754`). Script stays in the suite permanently so future prompt edits cannot re-break this branch.
 
 ### Migration + edge cases
 - `verify-phase3-migration.ts` (after user ran migration-003): status CHECK **APPLIED**, unique index **APPLIED**, default `'draft'` **APPLIED**.
@@ -87,6 +90,7 @@ All 7 E2E suites passed BEFORE review; the review targeted what tests are blind 
 6. **M2 (review):** retry endpoint = free Gemini spam. Fix: gated to errored answers + 10s per-answer throttle.
 7. **L1:** `topics: []` passed vacuously → now rejected fail-closed. **L4:** provider error bodies persisted publicly → single-line, 200-char cap. **L6:** receipt rounded 1.234567→"1.23" → now exact decimal strings.
 8. **PRD §6 deviation (self-found, step 1):** first-pass-wins rule now printed on every question page.
+9. **Empty-topics eval judged blind (found by USER manual test, 2026-07-22):** the review prompt never included the question, so with `topics:[]` the LLM was asked about "the question's subject" without seeing the question — terse-but-correct answers ("19" for "what is 9+10") failed as "no context". Fix (user-approved security constraints honored): question title+body now embedded as a SEPARATE labeled+delimited+neutralized block (context only — asker gets no injection backdoor; answer stays absolutely untrusted); with `topics:[]` the LLM judges one `direct_answer` criterion ("does the ANSWER directly and correctly answer the QUESTION?"); objective checks unchanged — still run first, in code, independent of the LLM on both branches. Verified offline (21/21) + live (4/4, see Empty-topics section); permanent regression script added.
 
 Deferred (documented, no fund risk): cooldown TOCTOU (L2), signature-replay comment (L5).
 
@@ -113,7 +117,7 @@ Deferred (documented, no fund risk): cooldown TOCTOU (L2), signature-replay comm
 | Answer editor + preview + eval results UI + answer list | ✅ |
 | Mounted on /q/[id] (+ WalletConnect, first-pass rule) | ✅ |
 | migration-003 (status default/CHECKs + unique index) — applied + verified | ✅ |
-| 8 E2E scripts (4 dedicated per R1 + R3 + discrepancy + flow + edges) | ✅ |
+| 9 E2E scripts (4 dedicated per R1 + R3 + discrepancy + flow + edges + empty-topics regression) | ✅ |
 | tsc + build clean | ✅ |
 
 ---
@@ -142,6 +146,9 @@ Chuẩn bị: `npm run dev` đang chạy; ví MetaMask trên Arc Testnet có ch�
 7. Khôi phục `GEMINI_API_KEY` đúng → restart dev server → mở lại trang → bấm **Retry evaluation**.
    - **Thấy:** eval chạy lại → accepted → receipt 2 tx như bước 3-4.
    - **Nếu hỏng:** 429 "retry throttled" → đợi 10 giây bấm lại.
+8. **Test câu hỏi đơn giản không topics:** tạo question kiểu "What is 9 + 10?" với min words = 1, KHÔNG bật code required, KHÔNG thêm topic → submit "21" từ 1 ví, rồi "19" từ ví khác.
+   - **Thấy:** "21" FAILED với lý do sai số học (reasoning nói rõ đáp án đúng là 19); "19" ACCEPTED + payout, dù chỉ 1 từ.
+   - **Nếu hỏng:** "19" bị fail vì "thiếu ngữ cảnh" → prompt không nhúng question, regression của fix 2026-07-22 (chạy `npx tsx scripts/e2e-phase3-empty-topics-eval.ts` để xác nhận).
 
 ## Unresolved questions
 

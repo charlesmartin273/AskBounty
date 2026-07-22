@@ -105,14 +105,17 @@ export async function createOpenQuestion(
   asker: Signer,
   budgetUsdc: string,
   title: string,
+  opts?: { body?: string; criteria?: object },
 ) {
   const created = await api("POST", "/api/questions", {
     askerAddress: asker.account.address,
     title,
-    body: "How to page getLogs when the range exceeds RPC limits? Needs chunking + retry.",
+    body:
+      opts?.body ??
+      "How to page getLogs when the range exceeds RPC limits? Needs chunking + retry.",
     budget: budgetUsdc,
     deadline: new Date(Date.now() + 3600_000).toISOString(),
-    criteria: CRITERIA,
+    criteria: opts?.criteria ?? CRITERIA,
   });
   if (created.status !== 200) {
     throw new Error(`create failed: ${JSON.stringify(created.data)}`);

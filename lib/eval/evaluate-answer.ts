@@ -1,6 +1,6 @@
 import type { Criteria } from "../questions/criteria-schema";
 import { callLlm, LlmEvalError, VERDICT_SCHEMA } from "./llm-client";
-import { buildReviewPrompt } from "./llm-review-prompt";
+import { buildReviewPrompt, type QuestionContext } from "./llm-review-prompt";
 import { runObjectiveChecks, type CheckResult } from "./objective-checks";
 import { validateVerdict, VerdictValidationError } from "./verdict-validation";
 
@@ -33,15 +33,19 @@ export interface EvalOutcome {
 export async function evaluateAnswer(
   body: string,
   criteria: Criteria,
+  question: QuestionContext,
   llm: LlmCaller = callLlm,
 ): Promise<EvalOutcome> {
+  // Objective checks ALWAYS run first, in code, independent of the LLM —
+  // the LLM is one signal, never the sole decider (holds for empty topics
+  // too: min_words / has_code_block gate below applies unchanged).
   const results = runObjectiveChecks(body, criteria);
   if (results.some((r) => !r.pass)) {
     return { outcome: "fail", results }; // LLM deliberately NOT called
   }
   try {
     const raw = await llm({
-      ...buildReviewPrompt(body, criteria),
+      ...buildReviewPrompt(body, criteria, question),
       schema: VERDICT_SCHEMA,
     });
     const verdict = validateVerdict(raw); // M3: throws on any shape violation
