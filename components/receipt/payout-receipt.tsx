@@ -66,7 +66,7 @@ export function PayoutReceipt({
       )}
       <p className="text-xs text-green-800">
         Both transactions are public — verify on Arcscan that the agent kept
-        nothing beyond protocol fees.
+        nothing.
       </p>
     </div>
   );

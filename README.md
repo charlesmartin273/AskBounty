@@ -21,13 +21,14 @@ Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supaba
 
 The shared pre-deployed AgenticCommerce contract sets the provider at job creation and only allows `ADMIN_ROLE` to change it while the job is still `Open`. We hold no admin role, and the winning answerer is unknown until after funding — so assigning the winner as onchain provider is impossible ("Option A" in the PRD).
 
-We therefore run **Option B**: the AskBounty agent wallet is the fixed provider **and** evaluator for every job. On acceptance, `complete()` pays the escrow out to the agent wallet (minus protocol fees), and the agent immediately forwards the exact provider remainder to the winner in a second ERC-20 transfer. This is a centralization trade-off, disclosed openly:
+We therefore run **Option B**: the AskBounty agent wallet is the fixed provider **and** evaluator for every job. On acceptance, `complete()` pays the escrow out to the agent wallet, and the agent immediately forwards **the full amount the escrow released to it** to the winner in a second ERC-20 transfer — the agent never retains any part of the release, including any future evaluator fee ("what comes in goes out"). This is a centralization trade-off, disclosed openly:
 
 - The budget is still provably locked in escrow from the moment the question is posted — the asker cannot rug-pull answerers.
-- Every receipt shows **both** transactions (escrow→agent and agent→winner) with Arcscan links, so anyone can verify the agent kept nothing beyond the protocol's evaluator fee.
+- Every receipt shows **both** transactions (escrow→agent and agent→winner) with Arcscan links, so anyone can verify the agent kept nothing. If the released amount ever differs from the snapshot shown at question creation (admin fee change), the full released amount is still forwarded and the receipt displays both numbers; an ambiguous multi-leg release fails loud (`payout_failed`) rather than guessing.
 - The winner receives **exactly** the net amount displayed on the question page before anyone wrote a word ("Bounty 20 USDC · winner receives X.XX USDC after protocol fees" — computed from live `platformFeeBP`/`evaluatorFeeBP` reads, never hardcoded). Forward-hop gas is absorbed by the agent wallet, never deducted from the winner.
 - The trust assumption is: the agent wallet forwards the payout honestly. A payout state machine (`accepted → payout_pending → paid`) with cron retries and a visible "payout pending" status makes any failure loud, not silent.
 - Pending answers are publicly readable; acceptance order follows submission order, so copying a pending answer cannot outrank the original. Private submissions are a v2 item.
+- Askers reclaim funds via expiry refund; explicit early-cancel is a v2 convenience. The escrow always has a refund path once the deadline passes, so funds can never be stranded — cancel would only add convenience, not safety.
 
 ## Getting started
 

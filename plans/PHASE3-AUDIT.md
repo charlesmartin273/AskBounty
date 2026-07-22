@@ -145,7 +145,7 @@ Chuẩn bị: `npm run dev` đang chạy; ví MetaMask trên Arc Testnet có ch�
 
 ## Unresolved questions
 
-1. **Fee BPs ≠ 0 trong tương lai:** khi đó `complete()` có thể phát 2 event `PaymentReleased` cùng về ví agent (provider + evaluator leg). Code hiện fail-loud (payout_failed) thay vì đoán. Nếu Circle bật fee, cần đọc lại source contract để xác định số event/leg — và quyết định: agent giữ evaluator fee (như README mô tả) hay forward cả?
+1. ~~Fee BPs ≠ 0: agent giữ evaluator fee hay forward cả?~~ **RESOLVED (user, 2026-07-22):** agent forward **TOÀN BỘ** phần escrow release, không giữ evaluator fee — "số vào = số ra" tuyệt đối kể cả khi fee ≠ 0. Fail-loud giữ nguyên khi release đa-leg mơ hồ. README đã sửa (bỏ mọi câu agent giữ evaluator fee); copy receipt sửa thành "the agent kept nothing".
 2. **`complete()` sau `expiredAt`:** hành vi chưa xác minh onchain — race payout-vs-refund quanh deadline sẽ rơi vào `payout_failed` (loud). Đề xuất xử lý UX ở Phase 4 (cron đánh dấu expired).
-3. **PRD §6 "cancel khi chưa có answer nào":** chưa nằm trong phase nào — cắt hẳn hay để v2?
+3. ~~PRD §6 "cancel khi chưa có answer nào"~~ **RESOLVED (user, 2026-07-22):** để v2, KHÔNG làm trong hackathon — expiry refund đã đảm bảo tiền không bao giờ kẹt; cancel chỉ là tiện lợi. Ghi vào README mục Known limitation: "Askers reclaim funds via expiry refund; explicit early-cancel is a v2 convenience."
 4. Dev server đang chạy của anh/chị ở :3002 (PID 21592) được dùng cho E2E (hot-reload code mới); server :3005 tạm cho drill R3 đã tắt.
