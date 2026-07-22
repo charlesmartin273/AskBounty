@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withAgentWallet } from "@/lib/chain/agent-wallet-lock";
 import { getAgentWalletClient, publicClient } from "@/lib/chain/clients";
 import { JOB_STATUS } from "@/lib/chain/abi-agentic-commerce";
 import { getJob } from "@/lib/escrow/escrow-reads";
@@ -37,10 +38,9 @@ export async function POST(
   }
 
   try {
-    const hash = await setBudget(
-      { wallet: getAgentWalletClient(), publicClient },
-      jobId,
-      expected,
+    // Serialized with all other agent-wallet writes (H2 nonce safety).
+    const hash = await withAgentWallet(() =>
+      setBudget({ wallet: getAgentWalletClient(), publicClient }, jobId, expected),
     );
     return NextResponse.json({ ok: true, tx: hash });
   } catch (err) {

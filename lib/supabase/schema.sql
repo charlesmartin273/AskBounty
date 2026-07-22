@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS questions (
   budget NUMERIC NOT NULL,
   criteria JSONB NOT NULL,
   job_id BIGINT,
-  status TEXT DEFAULT 'open',          -- open | answered | expired
+  status TEXT DEFAULT 'draft'          -- draft | open | answered | expired
+    CHECK (status IN ('draft', 'open', 'answered', 'expired')),
   deadline TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   -- Payout transparency (PRD-ERRATA E2): net amount + fee BPs snapshotted at
@@ -26,14 +27,17 @@ CREATE TABLE IF NOT EXISTS answers (
   question_id TEXT REFERENCES questions(id),
   answerer_address TEXT NOT NULL,
   body TEXT NOT NULL,
-  status TEXT DEFAULT 'pending',       -- pending | failed | accepted
+  status TEXT DEFAULT 'pending'        -- pending | failed | accepted
+    CHECK (status IN ('pending', 'failed', 'accepted')),
   eval_results JSONB,
   payout_tx TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   -- Option B dual-tx payout trail (escrow->agent, agent->winner).
   complete_tx TEXT,
   forward_tx TEXT,
-  payout_status TEXT DEFAULT NULL,     -- payout_pending | paid | payout_failed
+  payout_status TEXT DEFAULT NULL      -- payout_pending | paid | payout_failed
+    CHECK (payout_status IS NULL
+           OR payout_status IN ('payout_pending', 'paid', 'payout_failed')),
   -- Signature auth: keccak256(body) signed by answerer_address.
   content_hash TEXT,
   signature TEXT
@@ -42,6 +46,11 @@ CREATE TABLE IF NOT EXISTS answers (
 -- First-pass-wins evaluation order: answers per question by submission time.
 CREATE INDEX IF NOT EXISTS idx_answers_question_created
   ON answers (question_id, created_at);
+
+-- Double-accept guard (Phase 1 review M1): at most one accepted answer per
+-- question, enforced by the database behind the application-level CAS.
+CREATE UNIQUE INDEX IF NOT EXISTS one_accepted_per_question
+  ON answers (question_id) WHERE status = 'accepted';
 
 -- RLS: public read, NO write policies for anon/authenticated.
 -- Service-role key bypasses RLS entirely (server-side API routes only).

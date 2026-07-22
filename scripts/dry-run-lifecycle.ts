@@ -143,7 +143,7 @@ async function main() {
   // (f) agent completes -> escrow pays agent (provider remainder + evaluator fee)
   await pause(STEP_DELAY_MS);
   const agentBefore = await getUsdcBalance(publicClient, agent.account.address);
-  const completeHash = await completeJob(agentCtx, jobId, "dryrun pass");
+  const { hash: completeHash } = await completeJob(agentCtx, jobId, "dryrun pass");
   const agentAfter = await getUsdcBalance(publicClient, agent.account.address);
   console.log(`[complete] tx=${arcscanTxUrl(completeHash)}`);
   console.log(`[complete] agent delta=${usdcFmt(agentAfter - agentBefore)} (provider net + evaluator fee − gas)`);

@@ -1,5 +1,5 @@
 import "server-only";
-import { createPublicClient, createWalletClient } from "viem";
+import { createPublicClient, createWalletClient, nonceManager } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet } from "./config";
 import { arcTransport } from "./rpc-transport";
@@ -24,7 +24,9 @@ function buildAgentWallet() {
     );
   }
   return createWalletClient({
-    account: privateKeyToAccount(key as `0x${string}`),
+    // nonceManager tracks pending nonces in-process (H2) — paired with the
+    // withAgentWallet queue so concurrent requests never collide on nonces.
+    account: privateKeyToAccount(key as `0x${string}`, { nonceManager }),
     chain: arcTestnet,
     transport: arcTransport(),
   });

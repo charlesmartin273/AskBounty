@@ -5,6 +5,7 @@ import {
   type Account,
   type Chain,
   type PublicClient,
+  type TransactionReceipt,
   type Transport,
   type WalletClient,
 } from "viem";
@@ -126,9 +127,12 @@ export async function submitDeliverable(
 }
 
 // complete(jobId, reason) — evaluator-only; splits budget into platform fee,
-// evaluator fee and provider remainder (PRD-ERRATA E2).
+// evaluator fee and provider remainder (PRD-ERRATA E2). Returns the RECEIPT
+// so callers can parse PaymentReleased — the forward amount must come from
+// that event, never be recomputed (Phase 1 review M2: fee BPs can drift
+// between question creation and completion).
 export async function completeJob(ctx: Ctx, jobId: bigint, reason: string) {
-  const { hash } = await writeAndWait(ctx, () =>
+  return writeAndWait(ctx, () =>
     ctx.wallet.writeContract({
       address: AGENTIC_COMMERCE,
       abi: agenticCommerceAbi,
@@ -136,7 +140,35 @@ export async function completeJob(ctx: Ctx, jobId: bigint, reason: string) {
       args: [jobId, toBytes32Reason(reason), NO_OPT_PARAMS],
     }),
   );
-  return hash;
+}
+
+// Amount actually released to `recipient` by complete() — the ONLY trusted
+// source for the forward amount (M2). Requires EXACTLY one matching event
+// (review H1): with nonzero fee BPs the agent (provider AND evaluator) could
+// receive two legs, and silently picking the first would forward the wrong
+// amount. Zero or multiple matches -> loud payout_failed, never a guess.
+export function parsePaymentReleasedAmount(
+  receipt: TransactionReceipt,
+  jobId: bigint,
+  recipient: `0x${string}`,
+): bigint {
+  const hits = parseEventLogs({
+    abi: agenticCommerceAbi,
+    eventName: "PaymentReleased",
+    logs: receipt.logs,
+  }).filter(
+    (e) =>
+      e.args.jobId === jobId &&
+      e.args.provider.toLowerCase() === recipient.toLowerCase(),
+  );
+  if (hits.length !== 1) {
+    throw new Error(
+      `expected exactly 1 PaymentReleased(jobId=${jobId}, to=${recipient}) in tx ` +
+        `${receipt.transactionHash}, found ${hits.length}` +
+        (hits.length > 1 ? " — provider/evaluator legs ambiguous, manual recovery" : ""),
+    );
+  }
+  return hits[0].args.amount;
 }
 
 // claimRefund(jobId) — client-only (PRD-ERRATA E3); exposed for the asker

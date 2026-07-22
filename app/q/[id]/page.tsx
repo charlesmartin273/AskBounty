@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AnswerEditor } from "@/components/answer/answer-editor";
+import { AnswerList } from "@/components/answer/answer-list";
 import { Countdown } from "@/components/question/countdown";
 import { CriteriaDisplay } from "@/components/question/criteria-display";
 import { NetPayoutBadge } from "@/components/question/net-payout-badge";
+import { PayoutReceipt } from "@/components/receipt/payout-receipt";
+import { WalletConnect } from "@/components/wallet/wallet-connect";
+import { getAnswersForQuestion } from "@/lib/answers/answer-queries";
+import { toPublicAnswer } from "@/lib/answers/answer-types";
 import { AGENTIC_COMMERCE } from "@/lib/chain/config";
 import type { Criteria } from "@/lib/questions/criteria-schema";
 import { isQuestionId } from "@/lib/questions/question-id";
@@ -23,6 +29,13 @@ export default async function QuestionPage({
   if (!isQuestionId(id)) notFound();
   const row = await getQuestionRow(id);
   if (!row) notFound();
+
+  const answers =
+    row.status === "draft"
+      ? []
+      : (await getAnswersForQuestion(id)).map(toPublicAnswer);
+  const accepted = answers.find((a) => a.status === "accepted");
+  const deadlinePassed = Date.parse(row.deadline) <= Date.now();
 
   const arcscanTx = row.fund_tx
     ? `https://testnet.arcscan.app/tx/${row.fund_tx}`
@@ -74,14 +87,39 @@ export default async function QuestionPage({
 
           <CriteriaDisplay criteria={row.criteria as unknown as Criteria} />
 
-          <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Answers</p>
-            <p className="mt-1">
-              Answer submission opens in the next release (Phase 3). The first answer that
-              passes all criteria wins {row.net_payout ?? row.budget} USDC, paid instantly
-              from escrow.
+          {accepted && (
+            <PayoutReceipt
+              answer={accepted}
+              netPayout={String(row.net_payout ?? row.budget)}
+            />
+          )}
+
+          <section className="space-y-3">
+            <h2 className="font-medium">Answers ({answers.length})</h2>
+            {/* PRD §6: the first-pass-wins rule is printed on every question
+                page so racing is fair and legible. */}
+            <p className="text-xs text-muted-foreground">
+              First answer that passes all criteria wins the bounty — evaluation
+              order is submission order.
             </p>
-          </div>
+            <AnswerList answers={answers} />
+          </section>
+
+          {row.status === "open" && !deadlinePassed ? (
+            <section className="space-y-3 rounded-lg border p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-medium">Your answer</p>
+                <WalletConnect />
+              </div>
+              <AnswerEditor questionId={row.id} />
+            </section>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {row.status === "answered"
+                ? "This question has an accepted answer — submissions are closed."
+                : "The deadline has passed — submissions are closed."}
+            </p>
+          )}
         </>
       )}
     </main>
