@@ -8,7 +8,8 @@
 ## Overview
 - **Priority:** P1
 - **Status:** pending
-- **Description:** Markdown answer editor (lightweight textarea + preview), signed submission API (wallet signature over `(questionId, contentHash)`, verified server-side), trigger-on-submit evaluation (objective code checks first, then Claude one-signal), per-check feedback UI, first-pass-wins CAS race protection, per-wallet cooldown. **This phase runs eval and marks accepted; the actual onchain payout/forward is Phase 4** (accept sets status + fires payout pipeline entry).
+- **Description:** Markdown answer editor (lightweight textarea + preview), signed submission API (wallet signature over `(questionId, contentHash)`, verified server-side), trigger-on-submit evaluation (objective code checks first, then LLM one-signal), per-check feedback UI, first-pass-wins CAS race protection, per-wallet cooldown.
+- **SCOPE CHANGE (2026-07-21, user-approved):** the onchain payout (submit→complete→forward) + dual-tx receipt moved INTO this phase from Phase 4 — "submit answer + agent evaluates + pays" is one heart. Additional hard requirements: (R1) each of H2/M1/M2/M3 gets its own dedicated E2E script; (R2) winner's actual balance delta == net_payout snapshot, evidence pasted; (R3) LLM failures → "evaluation pending, retrying" + manual Retry, proven with a broken API key; (R4) receipt shows BOTH txs with Arcscan links; (R5) signature verified server-side before any DB write, proven by direct bad-signature API calls. Discrepancy rule: if `PaymentReleased.amount` != snapshot, forward the FULL released amount (agent retains nothing), warn in logs, show both numbers on the receipt.
 
 ## Key Insights
 - **Objective checks first, free, injection-immune** (PRD §6): min_words, has_code_block (regex ```), optional language hint. Only if objective checks pass do we call Claude (spam/cost control).

@@ -1,5 +1,15 @@
 # Phase 4 — Payout + Refund + Browse/Activity
 
+> **SCOPE CHANGE (2026-07-21, user-approved):** payout pipeline + dual-tx
+> receipt pulled INTO Phase 3 ("submit + evaluate + pay" is one heart).
+> Built there: `lib/payout/accept-answer.ts` (submit→complete→forward,
+> idempotent, claim-gated, forward amount = `PaymentReleased.amount` per M2),
+> `components/receipt/payout-receipt.tsx` (both txs + Arcscan links +
+> discrepancy line), manual retry route `POST /api/answers/[id]/retry`.
+> `payout-state.ts` dropped (YAGNI — transitions live in accept-answer).
+> Remaining Phase 4 scope: cron sweep, claim-refund, browse, activity,
+> vercel.json.
+
 ## Context Links
 - PRD: `AskBounty-PRD-EN.md` §4.4, §4.5, §5 (Answer/get paid, Expiry)
 - Architecture: brainstorm report (Accept flow; Payout transparency #2 dual-tx receipt, #3 state machine + retry; Expiry claimRefund)
@@ -64,16 +74,16 @@ Cron: `GET /api/cron/sweep` (auth `Authorization: Bearer CRON_SECRET`) → expir
 10. Compile check + full live flow: accept → both txs → winner receives; force a forward failure (e.g. temporarily wrong winner) to see payout_failed → cron retry.
 
 ## Todo List
-- [ ] payout-state transitions (forward-only retry)
-- [ ] accept-answer pipeline (submit→complete→forward, idempotent)
-- [ ] wire /api/answers CAS win → acceptAnswer
+- [x] ~~payout-state transitions~~ (done in Phase 3 inside accept-answer; forward-only retry via complete_tx gate)
+- [x] accept-answer pipeline (DONE in Phase 3 — submit→complete→forward, idempotent)
+- [x] wire /api/answers CAS win → acceptAnswer (DONE in Phase 3)
 - [ ] cron sweep route (auth + expiry + retry forwards + retry evals)
 - [ ] vercel.json cron schedule
-- [ ] dual-tx receipt component
+- [x] dual-tx receipt component (DONE in Phase 3)
 - [ ] claim-refund button (asker wallet)
 - [ ] browse list + question card
 - [ ] my-activity (only if time)
-- [ ] `tsc --noEmit` clean + live payout + forced-failure retry test
+- [ ] `tsc --noEmit` clean + live refund + cron sweep test
 
 ## Success Criteria
 - Accepted answer: winner wallet USDC increases by exactly the displayed net payout; receipt shows both txs with valid Arcscan links.
