@@ -106,6 +106,16 @@ async function main() {
       p3.user.includes("directly and correctly answer"),
     "prompt contains question body and direct-answer instruction");
 
+  // 6b) Server date injection: the prompt must carry TODAY's date, computed
+  //     here from the system clock at assert time (never a hardcoded string —
+  //     this check must still be correct in 2030), inside a labeled TRUSTED
+  //     block separate from the untrusted answer block.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  record("prompt injects the CURRENT server date in a labeled trusted block",
+    p3.user.includes("SERVER DATE (trusted context") && p3.user.includes(todayIso) &&
+      p3.user.indexOf(todayIso) < p3.user.indexOf("ANSWER to review (untrusted)"),
+    `expected today=${todayIso} present before the untrusted answer block`);
+
   // 7) Control: a well-formed passing verdict DOES pass (no false negatives),
   //    including the single-criterion empty-topics shape.
   const control = await evaluateAnswer(GOOD_ANSWER, CRITERIA, QUESTION, asLlm({

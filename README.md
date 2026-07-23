@@ -29,6 +29,7 @@ We therefore run **Option B**: the AskBounty agent wallet is the fixed provider 
 - The trust assumption is: the agent wallet forwards the payout honestly. A payout state machine (`accepted → payout_pending → paid`) with cron retries and a visible "payout pending" status makes any failure loud, not silent.
 - Pending answers are publicly readable; acceptance order follows submission order, so copying a pending answer cannot outrank the original. Private submissions are a v2 item.
 - Askers reclaim funds via expiry refund; explicit early-cancel is a v2 convenience. The escrow always has a refund path once the deadline passes, so funds can never be stranded — cancel would only add convenience, not safety.
+- The LLM evaluator has no real-time knowledge beyond the injected current date; questions requiring live external facts (prices, news) are out of scope for reliable auto-evaluation. When the evaluator cannot judge reliably, it fails closed: the bounty stays in escrow and refunds at expiry, so funds are never misdirected.
 
 ## Getting started
 

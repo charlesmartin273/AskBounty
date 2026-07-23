@@ -81,6 +81,13 @@ export function CriteriaBuilder({
             Add
           </button>
         </div>
+        {/* Soft reminder only — never blocks submission. */}
+        {value.topics.length === 0 && !value.mustIncludeCode && value.minWords < 10 && (
+          <p className="text-xs text-amber-700">
+            No criteria set: the agent will judge whether the answer directly
+            answers your question. Add criteria for more reliable evaluation.
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {value.topics.map((t) => (
             <span
