@@ -77,13 +77,13 @@ Cron: `GET /api/cron/sweep` (auth `Authorization: Bearer CRON_SECRET`) → expir
 - [x] ~~payout-state transitions~~ (done in Phase 3 inside accept-answer; forward-only retry via complete_tx gate)
 - [x] accept-answer pipeline (DONE in Phase 3 — submit→complete→forward, idempotent)
 - [x] wire /api/answers CAS win → acceptAnswer (DONE in Phase 3)
-- [ ] cron sweep route (auth + expiry + retry forwards + retry evals)
-- [ ] vercel.json cron schedule
+- [x] cron sweep route (auth + expiry ONLY — user C1 cut the retry jobs; manual Retry buttons cover them)
+- [x] vercel.json cron schedule (daily)
 - [x] dual-tx receipt component (DONE in Phase 3)
-- [ ] claim-refund button (asker wallet)
-- [ ] browse list + question card
-- [ ] my-activity (only if time)
-- [ ] `tsc --noEmit` clean + live refund + cron sweep test
+- [x] claim-refund button (asker-gated UI; E6: contract itself is permissionless-caller, pays asker always)
+- [x] browse list + question card (`/browse`, open+future-deadline only)
+- [x] my-activity (`/activity`, C4: accepted never shown without payout state)
+- [x] `tsc --noEmit` clean + live refund + cron sweep test (see ../PHASE4-AUDIT.md)
 
 ## Success Criteria
 - Accepted answer: winner wallet USDC increases by exactly the displayed net payout; receipt shows both txs with valid Arcscan links.

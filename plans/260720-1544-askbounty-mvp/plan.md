@@ -32,7 +32,7 @@ Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · viem/wagmi · Supaba
 | 1 | Foundations + Onchain Dry-Run Gate | [phase-01-foundations-and-onchain-dry-run-gate.md](phase-01-foundations-and-onchain-dry-run-gate.md) | audit-pass (awaiting approval, see ../PHASE1-AUDIT.md) | 2,3,4 |
 | 2 | Ask Flow + Question Page | [phase-02-ask-flow-and-question-page.md](phase-02-ask-flow-and-question-page.md) | audit-pass (awaiting approval, see ../PHASE2-AUDIT.md) | 3,4 |
 | 3 | Answer Flow + Evaluation Agent + Payout (expanded) | [phase-03-answer-flow-and-evaluation-agent.md](phase-03-answer-flow-and-evaluation-agent.md) | audit-pass (awaiting approval, see ../PHASE3-AUDIT.md) | 4 |
-| 4 | Cron Sweep + Refund + Browse/Activity (payout+receipt moved to 3) | [phase-04-payout-refund-browse-activity.md](phase-04-payout-refund-browse-activity.md) | pending | 5 |
+| 4 | Cron Sweep + Refund + Browse/Activity (payout+receipt moved to 3) | [phase-04-payout-refund-browse-activity.md](phase-04-payout-refund-browse-activity.md) | audit-pass (awaiting approval, see ../PHASE4-AUDIT.md) | 5 |
 | 5 | Polish + Deploy + Demo | [phase-05-polish-deploy-demo.md](phase-05-polish-deploy-demo.md) | pending | — |
 
 ## Dependencies
