@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS questions (
   budget NUMERIC NOT NULL,
   criteria JSONB NOT NULL,
   job_id BIGINT,
-  status TEXT DEFAULT 'draft'          -- draft | open | answered | expired
-    CHECK (status IN ('draft', 'open', 'answered', 'expired')),
+  status TEXT DEFAULT 'draft'          -- draft | open | answered | expired | refunded
+    CHECK (status IN ('draft', 'open', 'answered', 'expired', 'refunded')),
   deadline TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   -- Payout transparency (PRD-ERRATA E2): net amount + fee BPs snapshotted at

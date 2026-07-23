@@ -6,6 +6,8 @@ import { Countdown } from "@/components/question/countdown";
 import { CriteriaDisplay } from "@/components/question/criteria-display";
 import { NetPayoutBadge } from "@/components/question/net-payout-badge";
 import { PayoutReceipt } from "@/components/receipt/payout-receipt";
+import { ClaimRefundButton } from "@/components/refund/claim-refund-button";
+import { SiteNav } from "@/components/site-nav";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { getAnswersForQuestion } from "@/lib/answers/answer-queries";
 import { toPublicAnswer } from "@/lib/answers/answer-types";
@@ -43,10 +45,7 @@ export default async function QuestionPage({
 
   return (
     <main className="mx-auto w-full max-w-3xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">AskBounty</Link>
-        <Link href="/ask" className="text-sm underline">Ask a question</Link>
-      </div>
+      <SiteNav />
 
       {row.status === "draft" ? (
         <div className="rounded-lg border border-amber-400 bg-amber-50 p-4">
@@ -113,11 +112,43 @@ export default async function QuestionPage({
               </div>
               <AnswerEditor questionId={row.id} />
             </section>
+          ) : row.status === "expired" ? (
+            // Refund path (opened by the daily cron sweep; PRD-ERRATA E3:
+            // claimRefund is asker-wallet-only, the agent cannot do it).
+            <section className="space-y-3 rounded-lg border border-amber-400 bg-amber-50 p-4">
+              <p className="font-medium text-amber-800">
+                Question expired — no accepted answer. The asker can reclaim
+                the escrowed bounty.
+              </p>
+              <WalletConnect />
+              <ClaimRefundButton
+                questionId={row.id}
+                jobId={row.job_id!}
+                askerAddress={row.asker_address}
+              />
+            </section>
+          ) : row.status === "refunded" ? (
+            <section className="space-y-1 rounded-lg border p-4">
+              <p className="font-medium">Bounty refunded to the asker.</p>
+              {row.refund_tx && (
+                <p className="text-sm">
+                  refund tx:{" "}
+                  <a
+                    href={`https://testnet.arcscan.app/tx/${row.refund_tx}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all font-mono text-xs underline"
+                  >
+                    {row.refund_tx} ↗
+                  </a>
+                </p>
+              )}
+            </section>
           ) : (
             <p className="text-sm text-muted-foreground">
               {row.status === "answered"
                 ? "This question has an accepted answer — submissions are closed."
-                : "The deadline has passed — submissions are closed."}
+                : "The deadline has passed — submissions are closed pending the daily expiry sweep."}
             </p>
           )}
         </>

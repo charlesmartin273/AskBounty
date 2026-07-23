@@ -105,7 +105,7 @@ export async function createOpenQuestion(
   asker: Signer,
   budgetUsdc: string,
   title: string,
-  opts?: { body?: string; criteria?: object },
+  opts?: { body?: string; criteria?: object; deadlineMs?: number },
 ) {
   const created = await api("POST", "/api/questions", {
     askerAddress: asker.account.address,
@@ -114,7 +114,7 @@ export async function createOpenQuestion(
       opts?.body ??
       "How to page getLogs when the range exceeds RPC limits? Needs chunking + retry.",
     budget: budgetUsdc,
-    deadline: new Date(Date.now() + 3600_000).toISOString(),
+    deadline: new Date(opts?.deadlineMs ?? Date.now() + 3600_000).toISOString(),
     criteria: opts?.criteria ?? CRITERIA,
   });
   if (created.status !== 200) {

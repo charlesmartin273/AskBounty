@@ -12,7 +12,7 @@ export interface QuestionRow {
   budget: string | number; // Postgres NUMERIC arrives as a JSON number
   criteria: Record<string, unknown>;
   job_id: number | null;
-  status: "draft" | "open" | "answered" | "expired";
+  status: "draft" | "open" | "answered" | "expired" | "refunded";
   deadline: string;
   created_at: string;
   net_payout: string | number | null;
@@ -20,6 +20,7 @@ export interface QuestionRow {
   evaluator_fee_bp: number | null;
   create_tx: string | null;
   fund_tx: string | null;
+  refund_tx: string | null;
 }
 
 export function jsonError(status: number, error: string) {

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CriteriaBuilder } from "@/components/ask/criteria-builder";
 import { FundingWizard } from "@/components/ask/funding-wizard";
+import { SiteNav } from "@/components/site-nav";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import type { Criteria } from "@/lib/questions/criteria-schema";
 
@@ -73,11 +73,11 @@ export default function AskPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">AskBounty</Link>
+      <SiteNav />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-semibold">Ask a question</h1>
         <WalletConnect />
       </div>
-      <h1 className="text-2xl font-semibold">Ask a question</h1>
 
       {!activeId && resumeId && (
         <div className="flex items-center justify-between rounded-lg border border-amber-400 bg-amber-50 p-3 text-sm">

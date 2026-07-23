@@ -44,7 +44,17 @@ export async function POST(
     if (answer.payout_status === "paid") {
       return NextResponse.json({ answer: toPublicAnswer(answer), payout: null, already: true });
     }
-    await ensureQuestionAnswered(getSupabaseServerClient(), answer.question_id, answer.id);
+    const stillAnswerable = await ensureQuestionAnswered(
+      getSupabaseServerClient(),
+      answer.question_id,
+      answer.id,
+    );
+    if (!stillAnswerable) {
+      // Crash-window heal met an expired question: the accept was reverted
+      // (review H1) — report it instead of letting the payout throw a 500.
+      const fresh = await getAnswerRow(id);
+      return jsonError(409, `question is no longer open — accept reverted (answer now ${fresh?.status})`);
+    }
     const payout = await acceptAnswer(answer.id);
     const fresh = await getAnswerRow(id);
     return NextResponse.json({ answer: toPublicAnswer(fresh ?? answer), payout });

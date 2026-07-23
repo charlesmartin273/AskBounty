@@ -30,6 +30,8 @@ We therefore run **Option B**: the AskBounty agent wallet is the fixed provider 
 - Pending answers are publicly readable; acceptance order follows submission order, so copying a pending answer cannot outrank the original. Private submissions are a v2 item.
 - Askers reclaim funds via expiry refund; explicit early-cancel is a v2 convenience. The escrow always has a refund path once the deadline passes, so funds can never be stranded — cancel would only add convenience, not safety.
 - The LLM evaluator has no real-time knowledge beyond the injected current date; questions requiring live external facts (prices, news) are out of scope for reliable auto-evaluation. When the evaluator cannot judge reliably, it fails closed: the bounty stays in escrow and refunds at expiry, so funds are never misdirected.
+- Expiry is swept by a daily cron (`/api/cron/sweep`, Vercel Hobby limit), so a question can sit past its deadline for up to 24h before the refund button appears; browse already hides past-deadline questions, and the escrow itself is claimable the second `expiredAt` passes.
+- `claimRefund` on the deployed contract is permissionless as to CALLER, but the funds always go to the asker (verified live, PRD-ERRATA E6) — the asker-only refund button is a UX choice, not the security boundary. The recorded receipt link is verified by decoding the tx calldata (`claimRefund(jobId)`), so it cannot be forged.
 
 ## Getting started
 
