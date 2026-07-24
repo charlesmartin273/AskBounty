@@ -8,7 +8,7 @@
 
 ## Overview
 - **Priority:** P1
-- **Status:** pending
+- **Status:** ✅ complete (2026-07-24) — see `plans/PHASE5-AUDIT.md`. Executed with user-directed reordering: deploy FIRST, then demo data (3 questions instead of 1), README, polish, final checks. Deviation approved in plan review: agent-balance API + low-gas banner dropped (YAGNI); agent wallet balance checked manually pre-demo instead. Live: https://askbounty.vercel.app
 - **Description:** Deploy to Vercel with env + cron configured, seed demo data (one answered question with one failed + one passed answer), finalize README (limitation section, low-gas warning, faucet/setup, manual test guide), add agent-wallet low-gas warning UI, and polish the happy path for the live demo.
 
 ## Key Insights
