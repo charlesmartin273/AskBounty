@@ -22,6 +22,13 @@ export const dynamic = "force-dynamic";
 // question renders as accepting answers ONLY when status === 'open' — which
 // the finalize route grants only after verifying Funded + budget > 0
 // onchain. Drafts show a "not live" notice so nobody wastes effort.
+// Snapshot of the request-time clock (page is force-dynamic — one snapshot
+// per request; the live countdown is the client Countdown component).
+function deadlineState(deadline: string) {
+  const msLeft = Date.parse(deadline) - Date.now();
+  return { deadlinePassed: msLeft <= 0, deadlineNear: msLeft < 10 * 60_000 };
+}
+
 export default async function QuestionPage({
   params,
 }: {
@@ -37,7 +44,7 @@ export default async function QuestionPage({
       ? []
       : (await getAnswersForQuestion(id)).map(toPublicAnswer);
   const accepted = answers.find((a) => a.status === "accepted");
-  const deadlinePassed = Date.parse(row.deadline) <= Date.now();
+  const { deadlinePassed, deadlineNear } = deadlineState(row.deadline);
 
   const arcscanTx = row.fund_tx
     ? `https://testnet.arcscan.app/tx/${row.fund_tx}`
@@ -110,6 +117,12 @@ export default async function QuestionPage({
                 <p className="font-medium">Your answer</p>
                 <WalletConnect />
               </div>
+              {/* Soft nudge only — never blocks (M2 UX companion). */}
+              {deadlineNear && (
+                <p className="text-xs text-amber-700">
+                  Deadline is near: evaluation may not finish in time.
+                </p>
+              )}
               <AnswerEditor questionId={row.id} />
             </section>
           ) : row.status === "expired" ? (

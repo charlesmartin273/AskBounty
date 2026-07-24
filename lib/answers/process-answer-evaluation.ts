@@ -14,6 +14,16 @@ export interface ProcessedEvaluation {
 
 type Db = ReturnType<typeof getSupabaseServerClient>;
 
+// M2 fix (user-approved 2026-07-24): an answer must never be accepted after
+// the deadline — the escrow may already be refundable/refunded. The reason
+// is deliberately distinct from a content failure so the answerer never
+// thinks their answer was wrong.
+export const DEADLINE_MISS_REASON =
+  "Submitted in time, but evaluation did not finish before the deadline. " +
+  "The bounty was refunded to the asker.";
+
+const deadlinePassed = (deadline: string) => Date.parse(deadline) <= Date.now();
+
 // Evaluates an answer row and persists the outcome. Shared by the submit
 // route (trigger-on-submit) and the manual retry route.
 // Concurrency rules (review C2/H2): EVERY answer-status write is guarded on
@@ -25,9 +35,25 @@ type Db = ReturnType<typeof getSupabaseServerClient>;
 export async function processAnswerEvaluation(
   answer: AnswerRow,
   criteria: Criteria,
-  question: QuestionContext,
+  question: QuestionContext & { deadline: string },
 ): Promise<ProcessedEvaluation> {
   const db = getSupabaseServerClient();
+
+  // Deadline guard #1 — BEFORE the LLM call (no API cost on dead questions;
+  // reachable via the retry path, since fresh submissions are rejected at
+  // the route when the deadline has passed).
+  if (deadlinePassed(question.deadline)) {
+    const evalResults: EvalResultsJson = {
+      error: null,
+      failReason: DEADLINE_MISS_REASON,
+    };
+    const changed = await guardedUpdate(db, answer.id, {
+      status: "failed",
+      eval_results: evalResults,
+    });
+    return changed ? { status: "failed", evalResults } : refreshState(db, answer.id);
+  }
+
   const evalOutcome = await evaluateAnswer(answer.body, criteria, question);
   const evalResults: EvalResultsJson = {
     results: evalOutcome.results,
@@ -42,6 +68,21 @@ export async function processAnswerEvaluation(
   }
 
   if (evalOutcome.outcome === "fail") {
+    const changed = await guardedUpdate(db, answer.id, {
+      status: "failed",
+      eval_results: evalResults,
+    });
+    return changed ? { status: "failed", evalResults } : refreshState(db, answer.id);
+  }
+
+  // Deadline guard #2 — the evaluation itself may have outlasted the
+  // deadline; re-check right before anything is accepted or paid.
+  if (deadlinePassed(question.deadline)) {
+    const evalResults: EvalResultsJson = {
+      results: evalOutcome.results,
+      error: null,
+      failReason: DEADLINE_MISS_REASON,
+    };
     const changed = await guardedUpdate(db, answer.id, {
       status: "failed",
       eval_results: evalResults,

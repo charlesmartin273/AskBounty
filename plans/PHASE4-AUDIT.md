@@ -1,6 +1,6 @@
 # PHASE 4 AUDIT — Cron Sweep + Claim Refund + Browse + My Activity
 
-2026-07-23 · Status: **PASS** (3 Phase-4 E2E scripts = 26 assertions + Phase-3 flow regression 14/14, all green on real Arc Testnet + Supabase) — awaiting user approval.
+2026-07-23 (updated 07-24) · Status: **PASS** (4 Phase-4 E2E scripts = 32 assertions + Phase-3 flow regression 14/14, all green on real Arc Testnet + Supabase) — awaiting user approval.
 
 Live incident during the gate: `claimRefund` reality contradicted PRD-ERRATA E3 → protocol followed, recorded as **E6**, user decided, code hardened, re-tested (details §4).
 
@@ -40,6 +40,9 @@ No/wrong secret → 401 (fail-closed) · open+past-deadline → expired · answe
 ### `e2e-phase4-browse-activity.ts` ✱ — 7/7 PASS (C3/C4)
 Browse hides answered/draft rows · activity invalid address → 400 · **C4:** fixture accepted-but-UNPAID answer surfaces `payoutStatus != 'paid'` (UI label "Accepted — payout pending", never bare accepted); real paid answer carries exact `paidAmount` + forward tx (`0x90beaae7…`) · asked list correct (22 rows) · `/activity` route renders.
 
+### `e2e-phase4-deadline-guards.ts` — 6/6 PASS (M2 fix, user-approved 2026-07-24; permanent regression)
+Through the REAL retry route: **guard 1** (deadline already past) → failed in 727ms with NO check results (Gemini never called); **guard 2** (deadline passed DURING evaluation — fixture deadline +1.2s vs Gemini latency) → the evaluation ran and PASSED (`topics_covered=true`) yet the accept was blocked: question stayed `open`, no complete_tx, no payout. Both guards return the EXACT honest copy, distinct from a content failure: *"Submitted in time, but evaluation did not finish before the deadline. The bounty was refunded to the asker."* UX companion: `/q/[id]` shows "Deadline is near: evaluation may not finish in time" when <10 minutes remain (soft nudge, never blocks).
+
 ### Regression — `e2e-phase3-answer-flow.ts` ✱ — 14/14 PASS
 Full Phase-3 flow unbroken after Phase-4 changes (payout qpxtevaodxja: complete `0xc3caca0d…`, forward `0x575f9f72…`, winner delta 1.000000 == snapshot).
 
@@ -63,7 +66,7 @@ Code review (`plans/reports/code-reviewer-260723-1130-phase4-review.md`, DONE_WI
 1. **H1 (FIXED):** retry-route crash-window heal discarded `ensureQuestionAnswered`'s boolean → could 500; now returns 409 with the reverted-accept state.
 2. **M1 (FIXED):** = the E6 calldata-decode fix above; receipt link now unforgeable.
 3. **M3 (FIXED):** activity earnings summed via float → now bigint raw units (`usdcToRaw`/`rawToUsdc`).
-4. **M2 (user decision needed):** see Unresolved #1. Money-safe; display-only.
+4. **M2 (FIXED 07-24, user-approved):** two deadline guards in `process-answer-evaluation` — #1 BEFORE the LLM call (zero API cost on dead questions), #2 immediately before accept/payout (evaluation may outlast the deadline). Honest, content-distinct failure copy; near-deadline nudge on `/q/[id]`; dedicated permanent regression script (6/6). Closes Unresolved #1.
 5. Lows deferred (documented, no fund risk): non-constant-time cron token compare; stale fetch race on wallet switch; `(status,deadline)` index; retry burns one LLM eval on dead questions.
 
 ## 5. Verification
@@ -101,7 +104,7 @@ Route map (rule 10): **/** (nav + CTA) · **/browse** · **/activity** · **/ask
    - **Thấy:** 2 tab. Tab Answered: answer thắng hiện **"Paid X USDC · verify ↗"** (link Arcscan tx forward) — KHÔNG BAO GIỜ hiện chữ "accepted" trần; nếu có answer accepted mà payout chưa xong sẽ hiện **"Accepted — payout pending"** màu vàng. Dòng "Earnings … · Pass rate …" phía trên.
    - **Nếu hỏng:** thấy "accepted" trần không kèm trạng thái tiền → vi phạm C4, báo ngay.
 4. **Flow refund (tiền thật trên testnet, ~12 phút):** tạo question mới qua `/ask` với budget nhỏ (1 USDC) và **deadline = thời điểm hiện tại + 11 phút**, fund đủ 3 bước wizard. Đợi qua deadline (~11 phút).
-   - Trong lúc chờ, mở `/q/[id]`: vẫn hiện OPEN vì cron ngày chạy 1 lần — đây là hành vi đúng ("submissions are closed pending the daily expiry sweep" nếu quá hạn).
+   - Trong lúc chờ, mở `/q/[id]`: vẫn hiện OPEN vì cron ngày chạy 1 lần — đây là hành vi đúng ("submissions are closed pending the daily expiry sweep" nếu quá hạn). Khi còn dưới 10 phút, cạnh khung "Your answer" có dòng nhắc vàng **"Deadline is near: evaluation may not finish in time."** (chỉ nhắc, không chặn).
 5. Kích cron thủ công (thay `<CRON_SECRET>` bằng giá trị trong `.env.local`):
    `curl -H "Authorization: Bearer <CRON_SECRET>" http://localhost:3002/api/cron/sweep`
    - **Thấy:** JSON `{"expired":1,...}`; refresh `/q/[id]` → banner vàng "Question expired — no accepted answer" + nút **Claim refund**.
@@ -114,6 +117,6 @@ Route map (rule 10): **/** (nav + CTA) · **/browse** · **/activity** · **/ask
 
 ## Unresolved questions
 
-1. **Review M2 (display-only, money-safe):** answer nộp TRƯỚC deadline nhưng eval xong SAU deadline (trước sweep) có thể flip question `answered`; nếu asker/bên thứ ba đã trigger refund onchain trước đó, payout sẽ `payout_failed` vĩnh viễn trong khi escrow đã refund — DB hiện "Accepted — payout pending" không bao giờ resolve. Onchain luôn an toàn (job chỉ trả 1 lần). Fix đề xuất (đụng code Phase 3, cần anh/chị duyệt): trong nhánh accept của `process-answer-evaluation`, từ chối accept nếu `deadline < now` (answer → failed "deadline passed during evaluation").
-2. Hành vi `complete()` sau `expiredAt` vẫn chưa xác minh onchain (tồn từ Phase 3) — chỉ ảnh hưởng thông điệp lỗi của race ở #1.
+1. ~~Review M2 race~~ **RESOLVED (user-approved, 2026-07-24):** hai deadline guard đã vào `process-answer-evaluation` (trước LLM + trước accept), lý do hiển thị trung thực tách bạch khỏi "trả lời sai", nhắc gần-deadline trên `/q/[id]`, regression script `e2e-phase4-deadline-guards.ts` 6/6 giữ vĩnh viễn.
+2. Hành vi `complete()` sau `expiredAt` vẫn chưa xác minh onchain (tồn từ Phase 3) — với guard #2, app không còn đường nào gọi `complete()` sau deadline, nên câu hỏi này chỉ còn giá trị tài liệu.
 3. Server dev của anh/chị (:3002) dùng cho toàn bộ E2E; các fixture DB đều đã tự dọn.
