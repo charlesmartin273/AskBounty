@@ -2,7 +2,7 @@
 // dry-run-lifecycle.ts. Onchain negative tests rely on viem's gas-estimation
 // revert (no gas spent on expected failures).
 // Run: npx tsx scripts/dry-run-edge-cases.ts <completedJobId>
-import { ensureWalletKey, usdcFmt } from "./dry-run-wallet-setup";
+import { ensureWalletKey } from "./dry-run-wallet-setup";
 import { createPublicClient, createWalletClient, type PublicClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet, arcscanTxUrl } from "../lib/chain/config";

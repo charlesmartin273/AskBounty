@@ -4,8 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { Button } from "@/components/ui/button";
+import { ErrorNote } from "@/components/ui/error-note";
 import { Textarea } from "@/components/ui/textarea";
 import type { PublicAnswer } from "@/lib/answers/answer-types";
+import {
+  toFriendlyError,
+  UserFacingError,
+  type FriendlyError,
+} from "@/lib/ui/friendly-error";
 import {
   buildAnswerMessage,
   contentHashOf,
@@ -24,7 +30,7 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<FriendlyError | null>(null);
   const [result, setResult] = useState<PublicAnswer | null>(null);
 
   if (!isConnected || !address) {
@@ -51,16 +57,12 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
         body: JSON.stringify({ questionId, body, address, signature }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`);
+      // API error strings are already user-facing copy (cooldown, closed…)
+      if (!res.ok) throw new UserFacingError(data?.error ?? `HTTP ${res.status}`);
       setResult(data.answer as PublicAnswer);
       router.refresh(); // re-render server components (answer list, receipt)
     } catch (err) {
-      // viem puts the revert reason on line 2 — keep the first lines
-      const msg =
-        err instanceof Error
-          ? err.message.split("\n").filter(Boolean).slice(0, 3).join(" ")
-          : String(err);
-      setError(msg);
+      setError(toFriendlyError(err));
     } finally {
       setBusy(false);
       setBusyLabel("");
@@ -110,7 +112,7 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
           Free to submit — you only sign a message, no gas.
         </span>
       </div>
-      {error && <p className="break-all text-sm text-red-600">{error}</p>}
+      <ErrorNote error={error} />
       {result && (
         <div className="space-y-2 rounded-md border p-3">
           <p className="text-sm font-medium">

@@ -18,6 +18,18 @@ import { getQuestionRow } from "@/lib/questions/question-api-helpers";
 
 export const dynamic = "force-dynamic";
 
+// Question title in the browser tab / link previews (judges share these).
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  if (!isQuestionId(id)) return { title: "Question" };
+  const row = await getQuestionRow(id).catch(() => null);
+  return { title: row?.title ?? "Question" };
+}
+
 // Public question page (server component). LIVE GUARD (yêu cầu 2): a
 // question renders as accepting answers ONLY when status === 'open' — which
 // the finalize route grants only after verifying Funded + budget > 0

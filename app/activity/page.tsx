@@ -4,9 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { SiteNav } from "@/components/site-nav";
+import { ErrorNote } from "@/components/ui/error-note";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { arcscanTxUrl } from "@/lib/chain/config";
 import { rawToUsdc, usdcDisplay, usdcToRaw } from "@/lib/format-usdc";
+import {
+  toFriendlyError,
+  UserFacingError,
+  type FriendlyError,
+} from "@/lib/ui/friendly-error";
 
 interface AskedRow {
   id: string; title: string; budget: string; net_payout: string | null;
@@ -24,18 +30,39 @@ interface AnsweredRow {
 export default function ActivityPage() {
   const { address, isConnected } = useAccount();
   const [tab, setTab] = useState<"asked" | "answered">("asked");
-  const [data, setData] = useState<{ asked: AskedRow[]; answered: AnsweredRow[] } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Result is keyed by the address it was fetched FOR: switching accounts
+  // derives back to "loading" without a setState-in-effect reset, and a slow
+  // response for a previous address can never overwrite the current one.
+  const [fetched, setFetched] = useState<{
+    address: string;
+    data?: { asked: AskedRow[]; answered: AnsweredRow[] };
+    error?: FriendlyError;
+  } | null>(null);
 
   useEffect(() => {
     if (!address) return; // render guards on isConnected below
+    let stale = false;
     fetch(`/api/activity?address=${address}`)
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json().catch(() => null))?.error ?? `HTTP ${r.status}`);
-        setData(await r.json());
+        if (!r.ok) {
+          throw new UserFacingError(
+            (await r.json().catch(() => null))?.error ?? `HTTP ${r.status}`,
+          );
+        }
+        const data = await r.json();
+        if (!stale) setFetched({ address, data });
       })
-      .catch((e) => setError(e instanceof Error ? e.message : String(e)));
+      .catch((e) => {
+        if (!stale) setFetched({ address, error: toFriendlyError(e) });
+      });
+    return () => {
+      stale = true;
+    };
   }, [address]);
+
+  const current = fetched && fetched.address === address ? fetched : null;
+  const data = current?.data ?? null;
+  const error = current?.error ?? null;
 
   const paidAnswers = data?.answered.filter((a) => a.payoutStatus === "paid") ?? [];
   // bigint raw units — never float-sum USDC (review M3).
@@ -54,7 +81,16 @@ export default function ActivityPage() {
       {!isConnected && (
         <p className="text-sm text-muted-foreground">Connect a wallet to see your questions and answers.</p>
       )}
-      {error && <p className="break-all text-sm text-red-600">{error}</p>}
+      <ErrorNote error={error} />
+      {isConnected && !data && !error && (
+        // Loading: fetch in flight after connect — never a blank page.
+        <div className="space-y-3">
+          <div className="h-5 w-40 animate-pulse rounded-md bg-muted" />
+          {[0, 1].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-lg border bg-muted/50" />
+          ))}
+        </div>
+      )}
       {isConnected && data && (
         <>
           <div className="flex gap-4 text-sm">

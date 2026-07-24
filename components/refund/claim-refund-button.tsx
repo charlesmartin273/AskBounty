@@ -4,8 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { Button } from "@/components/ui/button";
+import { ErrorNote } from "@/components/ui/error-note";
 import { agenticCommerceAbi } from "@/lib/chain/abi-agentic-commerce";
 import { AGENTIC_COMMERCE } from "@/lib/chain/config";
+import {
+  toFriendlyError,
+  UserFacingError,
+  type FriendlyError,
+} from "@/lib/ui/friendly-error";
 
 // Claim-refund flow. PRD-ERRATA E6: claimRefund is PERMISSIONLESS as to
 // caller, but the contract ALWAYS pays the job's client (asker) — funds can
@@ -28,7 +34,7 @@ export function ClaimRefundButton({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<FriendlyError | null>(null);
 
   if (!isConnected || !address) {
     return (
@@ -53,7 +59,11 @@ export function ClaimRefundButton({
       });
       setBusyLabel("Waiting for confirmation…");
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
-      if (receipt.status !== "success") throw new Error(`refund tx reverted: ${hash}`);
+      if (receipt.status !== "success") {
+        throw new UserFacingError(
+          `The refund transaction reverted onchain (${hash.slice(0, 10)}…) — the escrow was not touched. Retry in a moment.`,
+        );
+      }
       setBusyLabel("Recording refund…");
       const res = await fetch(`/api/questions/${questionId}/refund`, {
         method: "POST",
@@ -61,15 +71,10 @@ export function ClaimRefundButton({
         body: JSON.stringify({ refundTx: hash }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`);
+      if (!res.ok) throw new UserFacingError(data?.error ?? `HTTP ${res.status}`);
       router.refresh();
     } catch (err) {
-      // viem puts the revert reason on line 2 — keep the first lines
-      const msg =
-        err instanceof Error
-          ? err.message.split("\n").filter(Boolean).slice(0, 3).join(" ")
-          : String(err);
-      setError(msg);
+      setError(toFriendlyError(err));
     } finally {
       setBusy(false);
       setBusyLabel("");
@@ -87,7 +92,7 @@ export function ClaimRefundButton({
           can claim this refund — switch to that wallet.
         </p>
       )}
-      {error && <p className="break-all text-sm text-red-600">{error}</p>}
+      <ErrorNote error={error} />
     </div>
   );
 }

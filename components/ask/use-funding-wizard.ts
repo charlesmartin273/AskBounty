@@ -7,6 +7,11 @@ import { agenticCommerceAbi } from "@/lib/chain/abi-agentic-commerce";
 import { usdcAbi } from "@/lib/chain/abi-usdc";
 import { AGENTIC_COMMERCE, USDC_ADDRESS } from "@/lib/chain/config";
 import { usdcToRaw } from "@/lib/format-usdc";
+import {
+  toFriendlyError,
+  UserFacingError,
+  type FriendlyError,
+} from "@/lib/ui/friendly-error";
 
 interface WizardQuestion {
   id: string;
@@ -22,7 +27,7 @@ export interface WizardState {
   step: 1 | 2 | 3 | 4;
   busy: boolean;
   busyLabel: string;
-  error: string | null;
+  error: FriendlyError | null;
   question: WizardQuestion | null;
   agentAddress: `0x${string}` | null;
   finalized: boolean;
@@ -43,7 +48,7 @@ export function useFundingWizard(questionId: string) {
     const res = await fetch(`/api/questions/${questionId}`);
     if (!res.ok) {
       const msg = (await res.json().catch(() => null))?.error ?? `load failed (${res.status})`;
-      setS((p) => ({ ...p, loading: false, error: msg }));
+      setS((p) => ({ ...p, loading: false, error: { message: msg } }));
       return null;
     }
     const data = await res.json();
@@ -63,7 +68,12 @@ export function useFundingWizard(questionId: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body ?? {}),
     });
-    if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? `HTTP ${res.status}`);
+    // API error strings are already user-facing copy — pass through as-is
+    if (!res.ok) {
+      throw new UserFacingError(
+        (await res.json().catch(() => null))?.error ?? `HTTP ${res.status}`,
+      );
+    }
     return res.json();
   };
 
@@ -133,11 +143,7 @@ export function useFundingWizard(questionId: string) {
       }
       await refresh();
     } catch (err) {
-      // viem puts the revert reason on line 2 — keep the first lines, not just one
-      const msg = err instanceof Error
-        ? err.message.split("\n").filter(Boolean).slice(0, 3).join(" ")
-        : String(err);
-      setS((p) => ({ ...p, error: msg }));
+      setS((p) => ({ ...p, error: toFriendlyError(err) }));
     } finally {
       setS((p) => ({ ...p, busy: false, busyLabel: "" }));
     }

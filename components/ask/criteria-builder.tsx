@@ -27,8 +27,8 @@ export function CriteriaBuilder({
     <div className="space-y-4 rounded-lg border p-4">
       <h3 className="font-medium">Acceptance criteria</h3>
 
-      <div className="flex items-center gap-3">
-        <Label htmlFor="minWords" className="w-40">Minimum words</Label>
+      <div className="flex flex-wrap items-center gap-3">
+        <Label htmlFor="minWords" className="w-40 max-w-full">Minimum words</Label>
         <Input
           id="minWords"
           type="number"
@@ -41,8 +41,8 @@ export function CriteriaBuilder({
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <Label htmlFor="mustCode" className="w-40">Code sample required</Label>
+      <div className="flex flex-wrap items-center gap-3">
+        <Label htmlFor="mustCode" className="w-40 max-w-full">Code sample required</Label>
         <Switch
           id="mustCode"
           checked={value.mustIncludeCode}
@@ -51,7 +51,7 @@ export function CriteriaBuilder({
         {value.mustIncludeCode && (
           <Input
             placeholder="language (e.g. typescript)"
-            className="w-48"
+            className="w-48 max-w-full"
             value={value.codeLanguage ?? ""}
             onChange={(e) => onChange({ ...value, codeLanguage: e.target.value })}
           />

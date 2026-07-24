@@ -14,9 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AskBounty",
+  metadataBase: new URL("https://askbounty.vercel.app"),
+  title: {
+    default: "AskBounty — USDC bounties for answers, escrowed on Arc",
+    template: "%s · AskBounty",
+  },
   description:
-    "Post a question, lock USDC in escrow on Arc Testnet. First passing answer wins the bounty.",
+    "Post a question, lock USDC in escrow on Arc Testnet. An AI agent evaluates answers against your criteria — the first passing answer is paid instantly.",
+  openGraph: {
+    title: "AskBounty",
+    description:
+      "USDC question bounties with onchain escrow and AI evaluation on Arc Testnet.",
+    siteName: "AskBounty",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

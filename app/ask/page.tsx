@@ -9,8 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { CriteriaBuilder } from "@/components/ask/criteria-builder";
 import { FundingWizard } from "@/components/ask/funding-wizard";
 import { SiteNav } from "@/components/site-nav";
+import { ErrorNote } from "@/components/ui/error-note";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import type { Criteria } from "@/lib/questions/criteria-schema";
+import {
+  toFriendlyError,
+  UserFacingError,
+  type FriendlyError,
+} from "@/lib/ui/friendly-error";
 
 const DRAFT_KEY = "askbounty:draft-id";
 
@@ -33,10 +39,12 @@ export default function AskPage() {
   });
   const [fees, setFees] = useState<{ platformFeeBP: number; evaluatorFeeBP: number } | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<FriendlyError | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    // localStorage is client-only; reading it in the state initializer would SSR-mismatch
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setResumeId(localStorage.getItem(DRAFT_KEY));
     fetch("/api/fees").then((r) => r.json()).then(setFees).catch(() => setFees(null));
   }, []);
@@ -47,7 +55,7 @@ export default function AskPage() {
     : null;
 
   const submit = async () => {
-    if (!address) return setError("Connect your wallet first");
+    if (!address) return setError({ message: "Connect your wallet first." });
     setSubmitting(true);
     setError(null);
     try {
@@ -60,12 +68,13 @@ export default function AskPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      // API validation strings ("deadline must be…") are user-facing copy
+      if (!res.ok) throw new UserFacingError(data.error ?? `HTTP ${res.status}`);
       localStorage.setItem(DRAFT_KEY, data.questionId);
       setWarnings(data.warnings ?? []);
       setActiveId(data.questionId);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(toFriendlyError(err));
     } finally {
       setSubmitting(false);
     }
@@ -112,7 +121,7 @@ export default function AskPage() {
               placeholder="Describe the problem, constraints, what a good answer covers…"
               onChange={(e) => setBody(e.target.value)} />
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <div className="space-y-1">
               <Label htmlFor="budget">Budget (USDC)</Label>
               <Input id="budget" type="number" min="0.1" step="0.1" className="w-32"
@@ -131,7 +140,7 @@ export default function AskPage() {
             </p>
           )}
           <CriteriaBuilder value={criteria} onChange={setCriteria} />
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          <ErrorNote error={error} />
           <Button onClick={() => void submit()}
             disabled={submitting || !title.trim() || !body.trim() || budgetNum <= 0}>
             {submitting ? "Creating draft…" : "Create question & start funding"}

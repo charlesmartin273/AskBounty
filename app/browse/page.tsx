@@ -4,6 +4,8 @@ import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Open bounties" };
+
 // Public browse list (C3): ONLY live questions. status='open' is granted
 // exclusively by the finalize route AFTER onchain-verifying Funded + budget
 // matches the promise (Phase 2 live guard), so drafts/unfunded rows can

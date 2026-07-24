@@ -22,7 +22,12 @@ export function Countdown({ deadline }: { deadline: string }) {
     return () => clearInterval(t);
   }, [deadline]);
   return (
-    <span className={text === "expired" ? "font-medium text-red-600" : "font-medium"}>
+    // suppressHydrationWarning: server and client compute the remaining time
+    // a few seconds apart (React #418 otherwise); the 1s interval corrects it.
+    <span
+      suppressHydrationWarning
+      className={text === "expired" ? "font-medium text-red-600" : "font-medium"}
+    >
       {text === "expired" ? "Deadline passed" : `Closes in ${text}`}
     </span>
   );

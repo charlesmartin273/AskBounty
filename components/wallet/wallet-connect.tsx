@@ -3,6 +3,7 @@
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { arcTestnet } from "@/lib/chain/config";
+import { toFriendlyError } from "@/lib/ui/friendly-error";
 
 // Injected-wallet connect button + wrong-network guard.
 export function WalletConnect() {
@@ -23,7 +24,7 @@ export function WalletConnect() {
         {connectors.length === 0 && (
           <p className="text-xs text-red-600">No injected wallet found — install MetaMask.</p>
         )}
-        {error && <p className="text-xs text-red-600">{error.message}</p>}
+        {error && <p className="text-xs text-red-600">{toFriendlyError(error).message}</p>}
       </div>
     );
   }

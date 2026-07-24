@@ -25,7 +25,9 @@ export function AnswerList({ answers }: { answers: PublicAnswer[] }) {
               {a.answererAddress.slice(0, 6)}…{a.answererAddress.slice(-4)}
             </span>
             <span className="text-xs text-muted-foreground">
-              {new Date(a.createdAt).toLocaleString()}
+              {/* deterministic UTC format: SSR and client must render the
+                  same text (locale/timezone formats hydration-mismatch) */}
+              {new Date(a.createdAt).toISOString().slice(0, 16).replace("T", " ")} UTC
             </span>
             <StatusBadge answer={a} />
           </div>

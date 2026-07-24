@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ErrorNote } from "@/components/ui/error-note";
 import { useFundingWizard } from "./use-funding-wizard";
 
 const STEPS = [
@@ -30,7 +31,7 @@ export function FundingWizard({ questionId }: { questionId: string }) {
     // Review M3: transient RPC/DB failure must not dead-end the wizard.
     return (
       <div className="space-y-2">
-        <p className="text-sm text-red-600">{w.error ?? "Question not found"}</p>
+        <p className="text-sm text-red-600">{w.error?.message ?? "Question not found"}</p>
         <Button variant="outline" onClick={() => void w.refresh()}>Retry loading</Button>
       </div>
     );
@@ -90,7 +91,7 @@ export function FundingWizard({ questionId }: { questionId: string }) {
             accounts to continue.
           </p>
         )}
-        {w.error && <p className="text-sm text-red-600 break-all">Error: {w.error}</p>}
+        <ErrorNote error={w.error} />
 
         {!w.finalized && (
           <Button
