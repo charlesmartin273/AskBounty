@@ -10,7 +10,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold">AskBounty</h1>
         <p className="text-lg text-muted-foreground">
           Post a question, lock a USDC bounty in ERC-8183 escrow on Arc Testnet. An AI
-          evaluation agent scores answers against your criteria — the first passing answer
+          evaluation agent scores answers against your criteria. The first passing answer
           is paid instantly, onchain.
         </p>
         <div className="flex gap-3">
