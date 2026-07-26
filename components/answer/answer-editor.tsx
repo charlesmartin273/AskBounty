@@ -20,7 +20,7 @@ import { EvalResultsList } from "./eval-results-list";
 import { MarkdownPreview } from "./markdown-preview";
 
 // Answer editor: textarea + preview, wallet-signed submission. The signature
-// covers (questionId, keccak256(body)) — the exact message the server
+// covers (questionId, keccak256(body)) - the exact message the server
 // verifies (same module, no drift possible).
 export function AnswerEditor({ questionId }: { questionId: string }) {
   const { address, isConnected } = useAccount();
@@ -109,7 +109,7 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
           {busy ? busyLabel || "Submitting…" : "Sign & submit answer"}
         </Button>
         <span className="text-xs text-muted-foreground">
-          Free to submit — you only sign a message, no gas.
+          Free to submit - you only sign a message, no gas.
         </span>
       </div>
       <ErrorNote error={error} />
@@ -117,10 +117,10 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
         <div className="space-y-2 rounded-md border p-3">
           <p className="text-sm font-medium">
             {result.status === "accepted"
-              ? "🎉 Accepted — your answer won the bounty. Payout details below."
+              ? "🎉 Accepted - your answer won the bounty. Payout details below."
               : result.status === "failed"
-                ? "Not accepted — see the checks below, fix and resubmit (60s cooldown)."
-                : "Evaluation pending — see below."}
+                ? "Not accepted - see the checks below, fix and resubmit (60s cooldown)."
+                : "Evaluation pending - see below."}
           </p>
           <EvalResultsList answerId={result.id} evalResults={result.evalResults} />
         </div>

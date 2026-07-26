@@ -1,5 +1,5 @@
 // Minimal, XSS-safe markdown preview: plain text + fenced ``` code blocks
-// rendered as <pre>. React escapes all text — no raw HTML, no heavy lib
+// rendered as <pre>. React escapes all text - no raw HTML, no heavy lib
 // (full markdown deferred to Phase 5, matching the question body's rendering).
 export function MarkdownPreview({ body }: { body: string }) {
   const segments = body.split("```");

@@ -8,7 +8,7 @@ import { usdcToRaw } from "@/lib/format-usdc";
 import { isQuestionId } from "@/lib/questions/question-id";
 import { getQuestionRow, jsonError } from "@/lib/questions/question-api-helpers";
 
-// POST /api/questions/[id]/set-budget — wizard step 2. setBudget is
+// POST /api/questions/[id]/set-budget - wizard step 2. setBudget is
 // provider-only onchain (Phase 1 dry-run finding), so the agent backend
 // signs it. Idempotent: if the budget already matches, returns ok without
 // a second tx (safe to retry after a mid-flow refresh).

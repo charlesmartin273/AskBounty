@@ -1,9 +1,9 @@
-// Phase 3 dedicated E2E — snapshot-vs-released discrepancy (user rule "số
+// Phase 3 dedicated E2E - snapshot-vs-released discrepancy (user rule "số
 // vào bằng số ra"): if PaymentReleased.amount != the net_payout snapshot, the
 // agent must STILL forward the full released amount (retaining nothing), log
 // a warning, and the receipt must show BOTH numbers. We cannot change the
 // contract's fee BPs (no admin role), so the drift is simulated by tampering
-// the DB snapshot before the payout runs — the discrepancy code path is the
+// the DB snapshot before the payout runs - the discrepancy code path is the
 // same one a real fee change would hit.
 // Run: npx tsx scripts/e2e-phase3-payout-discrepancy.ts
 import {

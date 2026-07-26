@@ -10,7 +10,7 @@ async function main() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } },
   );
-  const qid = "qprobe0000mig"; // 13 chars, q + 12 — NOT a real question-id shape
+  const qid = "qprobe0000mig"; // 13 chars, q + 12 - NOT a real question-id shape
   await db.from("answers").delete().eq("question_id", qid);
   await db.from("questions").delete().eq("id", qid);
 
@@ -25,7 +25,7 @@ async function main() {
   const { error: badStatus } = await db.from("answers").insert({
     question_id: qid, answerer_address: "0xdead", body: "x", status: "bogus",
   });
-  console.log(`check-constraint answers.status: ${badStatus ? "APPLIED (" + badStatus.message + ")" : "MISSING — bogus status accepted"}`);
+  console.log(`check-constraint answers.status: ${badStatus ? "APPLIED (" + badStatus.message + ")" : "MISSING - bogus status accepted"}`);
   if (!badStatus) await db.from("answers").delete().eq("question_id", qid);
 
   // unique index probe
@@ -36,7 +36,7 @@ async function main() {
     question_id: qid, answerer_address: "0xdead", body: "a2", status: "accepted",
   });
   console.log(`first accepted insert: ${e1 ? "FAILED " + e1.message : "ok"}`);
-  console.log(`unique index one_accepted_per_question: ${e2 ? "APPLIED (" + e2.message + ")" : "MISSING — second accepted row allowed"}`);
+  console.log(`unique index one_accepted_per_question: ${e2 ? "APPLIED (" + e2.message + ")" : "MISSING - second accepted row allowed"}`);
 
   // default 'draft' probe
   const qid2 = "qprobe0001mig";

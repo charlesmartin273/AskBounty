@@ -1,6 +1,6 @@
 // Shared plumbing for the Phase 3 E2E scripts: drives the REAL API routes
 // (dev server :3000) + real Arc Testnet txs with the dry-run throwaway
-// wallets. NO server-only imports here — scripts run under tsx.
+// wallets. NO server-only imports here - scripts run under tsx.
 import { ensureWalletKey, usdcFmt } from "./dry-run-wallet-setup";
 import { createClient } from "@supabase/supabase-js";
 import { createPublicClient, createWalletClient, type PublicClient } from "viem";
@@ -82,7 +82,7 @@ async function getLogsChunked(client, filter, from: bigint, to: bigint) {
         logs.push(...await client.getLogs({ ...filter, fromBlock: start, toBlock: end }));
         break;
       } catch (err) {
-        if (attempt === 2) throw err; // chunk failed 3x — surface it
+        if (attempt === 2) throw err; // chunk failed 3x - surface it
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       }
     }

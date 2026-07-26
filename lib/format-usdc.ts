@@ -3,7 +3,7 @@ import { USDC_DECIMALS } from "./chain/config";
 
 // 6-decimal USDC helpers shared by API routes and UI. Amounts cross the API
 // boundary as decimal strings; Postgres NUMERIC arrives as a JSON number via
-// PostgREST — accept both, never do float math.
+// PostgREST - accept both, never do float math.
 
 export function usdcToRaw(amount: string | number): bigint {
   return parseUnits(String(amount).trim(), USDC_DECIMALS);

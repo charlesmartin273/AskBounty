@@ -81,7 +81,7 @@ export function CriteriaBuilder({
             Add
           </button>
         </div>
-        {/* Soft reminder only — never blocks submission. */}
+        {/* Soft reminder only - never blocks submission. */}
         {value.topics.length === 0 && !value.mustIncludeCode && value.minWords < 10 && (
           <p className="text-xs text-amber-700">
             No criteria set: the agent will judge whether the answer directly

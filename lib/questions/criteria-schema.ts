@@ -11,7 +11,7 @@ export interface Criteria {
 export interface CriteriaValidation {
   criteria?: Criteria;
   errors: string[];
-  warnings: string[]; // soft — shown in UI, do not block (PRD "impossible criteria" risk)
+  warnings: string[]; // soft - shown in UI, do not block (PRD "impossible criteria" risk)
 }
 
 const MAX_TOPICS = 10;
@@ -30,7 +30,7 @@ export function validateCriteria(input: unknown): CriteriaValidation {
     errors.push("minWords must be a non-negative integer");
   } else if (minWords > IMPOSSIBLE_MIN_WORDS) {
     warnings.push(
-      `minWords ${minWords} is likely impossible — no answer may ever pass; budget would ride to expiry/refund`,
+      `minWords ${minWords} is likely impossible - no answer may ever pass; budget would ride to expiry/refund`,
     );
   }
 

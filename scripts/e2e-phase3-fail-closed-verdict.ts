@@ -1,9 +1,9 @@
-// Phase 3 dedicated E2E — M3 fail-closed verdict validation: crafted bad LLM
+// Phase 3 dedicated E2E - M3 fail-closed verdict validation: crafted bad LLM
 // outputs are pushed through the REAL evaluate-answer code path (only the
 // HTTP transport is injected). NONE of them may ever yield outcome "pass".
 // Also proves: objective gate short-circuits BEFORE the LLM (with AND
 // without topics), and both prompt blocks (question=context, answer=
-// untrusted) are delimiter-neutralized. Offline — no server/chain/DB needed.
+// untrusted) are delimiter-neutralized. Offline - no server/chain/DB needed.
 // Run: npx tsx scripts/e2e-phase3-fail-closed-verdict.ts
 import { record, summarize, CRITERIA, GOOD_ANSWER, LAZY_ANSWER } from "./phase3-test-helpers";
 import { evaluateAnswer, type LlmCaller } from "../lib/eval/evaluate-answer";
@@ -65,7 +65,7 @@ async function main() {
     authErr.outcome === "error" && authErr.error?.retryable === false,
     JSON.stringify(authErr.error));
 
-  // 4) Objective gate: a lazy answer must fail WITHOUT the LLM being called —
+  // 4) Objective gate: a lazy answer must fail WITHOUT the LLM being called -
   //    with topics AND with empty topics (LLM is one signal, never the sole
   //    decider on either branch).
   let llmCalled = false;
@@ -107,7 +107,7 @@ async function main() {
     "prompt contains question body and direct-answer instruction");
 
   // 6b) Server date injection: the prompt must carry TODAY's date, computed
-  //     here from the system clock at assert time (never a hardcoded string —
+  //     here from the system clock at assert time (never a hardcoded string -
   //     this check must still be correct in 2030), inside a labeled TRUSTED
   //     block separate from the untrusted answer block.
   const todayIso = new Date().toISOString().slice(0, 10);

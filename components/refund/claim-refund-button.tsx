@@ -14,7 +14,7 @@ import {
 } from "@/lib/ui/friendly-error";
 
 // Claim-refund flow. PRD-ERRATA E6: claimRefund is PERMISSIONLESS as to
-// caller, but the contract ALWAYS pays the job's client (asker) — funds can
+// caller, but the contract ALWAYS pays the job's client (asker) - funds can
 // never be misdirected. Product decision (2026-07-23): the button stays
 // asker-gated for UX clarity; the contract itself needs no such gate. After
 // the tx confirms, /api/questions/[id]/refund verifies the calldata is
@@ -61,7 +61,7 @@ export function ClaimRefundButton({
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       if (receipt.status !== "success") {
         throw new UserFacingError(
-          `The refund transaction reverted onchain (${hash.slice(0, 10)}…) — the escrow was not touched. Retry in a moment.`,
+          `The refund transaction reverted onchain (${hash.slice(0, 10)}…) - the escrow was not touched. Retry in a moment.`,
         );
       }
       setBusyLabel("Recording refund…");
@@ -89,7 +89,7 @@ export function ClaimRefundButton({
       {wrongWallet && (
         <p className="text-xs text-muted-foreground">
           Only the asker ({askerAddress.slice(0, 6)}…{askerAddress.slice(-4)})
-          can claim this refund — switch to that wallet.
+          can claim this refund - switch to that wallet.
         </p>
       )}
       <ErrorNote error={error} />

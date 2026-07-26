@@ -6,11 +6,11 @@ import { isQuestionId } from "@/lib/questions/question-id";
 import { getQuestionRow, jsonError } from "@/lib/questions/question-api-helpers";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
-// POST /api/questions/[id]/job — record the jobId right after wizard step 1
+// POST /api/questions/[id]/job - record the jobId right after wizard step 1
 // (yêu cầu 3: persist immediately so an interrupted wizard can resume).
 // The claimed jobId is VERIFIED against the chain before storing: the job's
 // description must equal this questionId, provider+evaluator must be the
-// agent wallet, and the client must be the asker — a forged jobId is rejected.
+// agent wallet, and the client must be the asker - a forged jobId is rejected.
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -55,7 +55,7 @@ export async function POST(
   if (job.status !== JOB_STATUS.Open && job.status !== JOB_STATUS.Funded) {
     return jsonError(400, `job is not open (status ${job.status})`);
   }
-  // Review C1: the onchain expiry MUST equal the promised deadline — otherwise
+  // Review C1: the onchain expiry MUST equal the promised deadline - otherwise
   // a modified client could set a short expiry, let answerers work, then
   // refund (early-expiry rug). Hook must be zero (an arbitrary hook contract
   // could block completion).
@@ -76,7 +76,7 @@ export async function POST(
     .select("id");
   if (error) return jsonError(500, `db update failed: ${error.message}`);
   if (!updated || updated.length === 0) {
-    // Review M1: CAS matched 0 rows — a concurrent bind won; report honestly.
+    // Review M1: CAS matched 0 rows - a concurrent bind won; report honestly.
     const fresh = await getQuestionRow(id);
     if (fresh && fresh.job_id !== null && BigInt(fresh.job_id) === jobId) {
       return NextResponse.json({ ok: true });

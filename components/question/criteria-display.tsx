@@ -1,6 +1,6 @@
 import type { Criteria } from "@/lib/questions/criteria-schema";
 
-// Read-only render of the acceptance criteria — answerers see exactly what
+// Read-only render of the acceptance criteria - answerers see exactly what
 // the evaluation agent will check, before writing a word.
 export function CriteriaDisplay({ criteria }: { criteria: Criteria }) {
   return (
@@ -21,7 +21,7 @@ export function CriteriaDisplay({ criteria }: { criteria: Criteria }) {
           </li>
         )}
         {criteria.minWords === 0 && !criteria.mustIncludeCode && criteria.topics.length === 0 && (
-          <li className="text-muted-foreground">No explicit criteria — any substantive answer.</li>
+          <li className="text-muted-foreground">No explicit criteria - any substantive answer.</li>
         )}
       </ul>
       <p className="mt-3 text-xs text-muted-foreground">

@@ -1,4 +1,4 @@
-// Minimal ABI for the ERC-8183 AgenticCommerce contract — only what AskBounty
+// Minimal ABI for the ERC-8183 AgenticCommerce contract - only what AskBounty
 // calls. Extracted from the verified implementation on Arcscan
 // (0xA316fd02827242D537F84730F8a37D0BA5fd351a behind proxy 0x0747…4583).
 // Note: complete/reject take a bytes32 reason (NOT string); setBudget, fund,

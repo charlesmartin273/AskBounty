@@ -15,7 +15,7 @@ export interface ProcessedEvaluation {
 type Db = ReturnType<typeof getSupabaseServerClient>;
 
 // M2 fix (user-approved 2026-07-24): an answer must never be accepted after
-// the deadline — the escrow may already be refundable/refunded. The reason
+// the deadline - the escrow may already be refundable/refunded. The reason
 // is deliberately distinct from a content failure so the answerer never
 // thinks their answer was wrong.
 export const DEADLINE_MISS_REASON =
@@ -27,10 +27,10 @@ const deadlinePassed = (deadline: string) => Date.parse(deadline) <= Date.now();
 // Evaluates an answer row and persists the outcome. Shared by the submit
 // route (trigger-on-submit) and the manual retry route.
 // Concurrency rules (review C2/H2): EVERY answer-status write is guarded on
-// status='pending' — a concurrent evaluation that already resolved the row
+// status='pending' - a concurrent evaluation that already resolved the row
 // can never be overwritten. Accept order: answer is accepted FIRST (the
 // partial unique index one_accepted_per_question arbitrates races), THEN the
-// question CAS-flips open->answered — a crash between the two heals via
+// question CAS-flips open->answered - a crash between the two heals via
 // ensureQuestionAnswered on the retry path.
 export async function processAnswerEvaluation(
   answer: AnswerRow,
@@ -39,7 +39,7 @@ export async function processAnswerEvaluation(
 ): Promise<ProcessedEvaluation> {
   const db = getSupabaseServerClient();
 
-  // Deadline guard #1 — BEFORE the LLM call (no API cost on dead questions;
+  // Deadline guard #1 - BEFORE the LLM call (no API cost on dead questions;
   // reachable via the retry path, since fresh submissions are rejected at
   // the route when the deadline has passed).
   if (deadlinePassed(question.deadline)) {
@@ -61,7 +61,7 @@ export async function processAnswerEvaluation(
   };
 
   if (evalOutcome.outcome === "error") {
-    // R3: stays pending with the error surfaced — "evaluation pending,
+    // R3: stays pending with the error surfaced - "evaluation pending,
     // retrying" + manual Retry. Never silent, never accepted.
     const changed = await guardedUpdate(db, answer.id, { eval_results: evalResults });
     return changed ? { status: "pending", evalResults } : refreshState(db, answer.id);
@@ -75,7 +75,7 @@ export async function processAnswerEvaluation(
     return changed ? { status: "failed", evalResults } : refreshState(db, answer.id);
   }
 
-  // Deadline guard #2 — the evaluation itself may have outlasted the
+  // Deadline guard #2 - the evaluation itself may have outlasted the
   // deadline; re-check right before anything is accepted or paid.
   if (deadlinePassed(question.deadline)) {
     const evalResults: EvalResultsJson = {
@@ -140,7 +140,7 @@ async function guardedUpdate(
   return !!data && data.length > 0;
 }
 
-// The row was resolved by a concurrent evaluation — report ITS state.
+// The row was resolved by a concurrent evaluation - report ITS state.
 async function refreshState(db: Db, answerId: string): Promise<ProcessedEvaluation> {
   const { data, error } = await db
     .from("answers")
@@ -152,7 +152,7 @@ async function refreshState(db: Db, answerId: string): Promise<ProcessedEvaluati
   return { status: row.status, evalResults: row.eval_results ?? {} };
 }
 
-// CAS-flip the question open->answered for an ACCEPTED answer. Idempotent —
+// CAS-flip the question open->answered for an ACCEPTED answer. Idempotent -
 // also used by the retry route to heal a crash between accept and flip.
 // Returns false only when the question can no longer be answered (expired):
 // the accept is then reverted so the bounty is not stranded.
@@ -174,7 +174,7 @@ export async function ensureQuestionAnswered(
     .select("status")
     .eq("id", questionId)
     .single();
-  if (q?.status === "answered") return true; // already flipped — healed
+  if (q?.status === "answered") return true; // already flipped - healed
   await db
     .from("answers")
     .update({ status: "failed" })

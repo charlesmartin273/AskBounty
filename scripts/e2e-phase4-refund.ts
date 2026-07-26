@@ -1,8 +1,8 @@
-// Phase 4 dedicated E2E — CLAIM REFUND, the money path (C2, heaviest tested).
+// Phase 4 dedicated E2E - CLAIM REFUND, the money path (C2, heaviest tested).
 // Real onchain expiry: the create API enforces deadline >= now+10min and
 // claimRefund needs block.timestamp > expiredAt, so this script waits the
 // window out (~11 min total).
-// PRD-ERRATA E6 (live finding): claimRefund is PERMISSIONLESS as to caller —
+// PRD-ERRATA E6 (live finding): claimRefund is PERMISSIONLESS as to caller -
 // the contract ALWAYS pays the job's client (asker). So the C2 assertions
 // are: a NON-asker trigger succeeds but the FULL budget lands with the
 // ASKER (stronger money-safety proof than a revert); forged record hashes

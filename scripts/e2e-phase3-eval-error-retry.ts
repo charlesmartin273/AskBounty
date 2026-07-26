@@ -1,6 +1,6 @@
-// Phase 3 dedicated E2E — R3: a Gemini failure (forced with an INVALID API
+// Phase 3 dedicated E2E - R3: a Gemini failure (forced with an INVALID API
 // key) must leave the answer in "evaluation pending, retrying" with a manual
-// retry path — never a silent hang, never accepted. Uses TWO dev servers
+// retry path - never a silent hang, never accepted. Uses TWO dev servers
 // against the same DB: E2E_BAD_BASE_URL runs with GEMINI_API_KEY=invalid
 // (submission errors), then the retry goes through the healthy server.
 // Run (see runner): npx tsx scripts/e2e-phase3-eval-error-retry.ts

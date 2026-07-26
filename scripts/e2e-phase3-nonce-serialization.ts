@@ -1,4 +1,4 @@
-// Phase 3 dedicated E2E — H2 agent-wallet nonce serialization: two questions
+// Phase 3 dedicated E2E - H2 agent-wallet nonce serialization: two questions
 // accepted near-simultaneously trigger two full payout pipelines (submit +
 // complete + forward = 6 agent-wallet txs) through the withAgentWallet queue.
 // Without serialization the same key WOULD collide on nonces. PASS = both
@@ -47,7 +47,7 @@ async function main() {
     txs.every(Boolean) && new Set(txs).size === 4,
     txs.map((t) => t?.slice(0, 18)).join(", "));
 
-  console.log("\nEvidence — all four agent-wallet txs:");
+  console.log("\nEvidence - all four agent-wallet txs:");
   console.log(`A complete: https://testnet.arcscan.app/tx/${f1.complete_tx}`);
   console.log(`A forward:  https://testnet.arcscan.app/tx/${f1.forward_tx}`);
   console.log(`B complete: https://testnet.arcscan.app/tx/${f2.complete_tx}`);

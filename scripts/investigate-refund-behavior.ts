@@ -19,7 +19,7 @@ async function main() {
   console.log(`asker balance : ${usdcFmt(await getUsdcBalance(publicClient, asker))}`);
   console.log(`winner balance: ${usdcFmt(await getUsdcBalance(publicClient, winner))}`);
 
-  // Winner's recent txs via Blockscout API — find the claimRefund call and
+  // Winner's recent txs via Blockscout API - find the claimRefund call and
   // the USDC transfer destination inside it.
   const res = await fetch(
     `https://testnet.arcscan.app/api/v2/addresses/${winner}/transactions?filter=from`,

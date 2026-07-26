@@ -8,7 +8,7 @@ import { generateQuestionId } from "@/lib/questions/question-id";
 import { jsonError } from "@/lib/questions/question-api-helpers";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
-// POST /api/questions — create a DRAFT question row with the fee snapshot.
+// POST /api/questions - create a DRAFT question row with the fee snapshot.
 // The displayed net payout is LOCKED here (yêu cầu 1): computed from live
 // onchain fee reads at creation time and persisted, so later admin fee
 // changes never alter what answerers were promised on the page.
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   const { criteria, errors, warnings } = validateCriteria(body.criteria ?? {});
   if (!criteria) return jsonError(400, `invalid criteria: ${errors.join("; ")}`);
 
-  // Live fee snapshot (PRD-ERRATA E2) — never hardcode.
+  // Live fee snapshot (PRD-ERRATA E2) - never hardcode.
   const bps = await readFeeBps(publicClient);
   const netRaw = computeNetPayout(budgetRaw, bps);
   const questionId = generateQuestionId();

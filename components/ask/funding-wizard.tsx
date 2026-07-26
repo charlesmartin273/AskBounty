@@ -41,11 +41,11 @@ export function FundingWizard({ questionId }: { questionId: string }) {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">
-          Fund the bounty — {w.question.budget} USDC
+          Fund the bounty - {w.question.budget} USDC
         </CardTitle>
         {w.step === 4 ? (
           <p className="text-sm text-green-700">
-            Escrow funded onchain — one last verification step below.
+            Escrow funded onchain - one last verification step below.
           </p>
         ) : (
           <p className="text-sm text-muted-foreground">
@@ -101,7 +101,7 @@ export function FundingWizard({ questionId }: { questionId: string }) {
             {w.busy
               ? w.busyLabel
               : w.step === 4
-                ? "Finalize — verify escrow"
+                ? "Finalize - verify escrow"
                 : w.error
                   ? `Retry step ${w.step}`
                   : `Run step ${w.step}: ${STEPS[w.step - 1].title}`}

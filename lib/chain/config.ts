@@ -1,11 +1,11 @@
 import { defineChain } from "viem";
 
-// Arc Testnet — gas is paid in USDC (native). Public constants fall back to
+// Arc Testnet - gas is paid in USDC (native). Public constants fall back to
 // PRD Appendix values so read-only paths work even without a .env file.
 export const RPC_URL =
   process.env.NEXT_PUBLIC_ARC_RPC_URL ?? "https://rpc.testnet.arc.network";
 
-// Blockscout's proxy RPC — fallback when the primary rate-limits bursts.
+// Blockscout's proxy RPC - fallback when the primary rate-limits bursts.
 export const RPC_URL_FALLBACK = "https://testnet.arcscan.app/api/eth-rpc";
 
 export const ARC_CHAIN_ID = Number(
@@ -27,7 +27,7 @@ export const arcTestnet = defineChain({
 export const AGENTIC_COMMERCE = (process.env.NEXT_PUBLIC_AGENTIC_COMMERCE ??
   "0x0747EEf0706327138c69792bF28Cd525089e4583") as `0x${string}`;
 
-// USDC ERC-20 (6 decimals) — also the escrow payment token.
+// USDC ERC-20 (6 decimals) - also the escrow payment token.
 export const USDC_ADDRESS = (process.env.NEXT_PUBLIC_USDC_ADDRESS ??
   "0x3600000000000000000000000000000000000000") as `0x${string}`;
 

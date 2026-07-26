@@ -24,7 +24,7 @@ interface Ctx {
 const NO_OPT_PARAMS = "0x" as const;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
 
-// complete()/reject() reasons are bytes32 onchain (not string) — truncate at
+// complete()/reject() reasons are bytes32 onchain (not string) - truncate at
 // the BYTE level and right-pad. No string round-trip: decoding a dangling
 // multibyte UTF-8 sequence would inject U+FFFD and overflow 32 bytes.
 export function toBytes32Reason(reason: string): `0x${string}` {
@@ -87,7 +87,7 @@ export async function setBudget(ctx: Ctx, jobId: bigint, amount: bigint) {
   return hash;
 }
 
-// Approves exactly `amount` USDC then fund(jobId) — pulls USDC from caller.
+// Approves exactly `amount` USDC then fund(jobId) - pulls USDC from caller.
 export async function approveAndFund(ctx: Ctx, jobId: bigint, amount: bigint) {
   const { hash: approveHash } = await writeAndWait(ctx, () =>
     ctx.wallet.writeContract({
@@ -108,7 +108,7 @@ export async function approveAndFund(ctx: Ctx, jobId: bigint, amount: bigint) {
   return { approveHash, fundHash };
 }
 
-// submit(jobId, deliverable) — deliverable is keccak256(answerBody), anchoring
+// submit(jobId, deliverable) - deliverable is keccak256(answerBody), anchoring
 // the winning answer onchain.
 export async function submitDeliverable(
   ctx: Ctx,
@@ -126,9 +126,9 @@ export async function submitDeliverable(
   return hash;
 }
 
-// complete(jobId, reason) — evaluator-only; splits budget into platform fee,
+// complete(jobId, reason) - evaluator-only; splits budget into platform fee,
 // evaluator fee and provider remainder (PRD-ERRATA E2). Returns the RECEIPT
-// so callers can parse PaymentReleased — the forward amount must come from
+// so callers can parse PaymentReleased - the forward amount must come from
 // that event, never be recomputed (Phase 1 review M2: fee BPs can drift
 // between question creation and completion).
 export async function completeJob(ctx: Ctx, jobId: bigint, reason: string) {
@@ -142,7 +142,7 @@ export async function completeJob(ctx: Ctx, jobId: bigint, reason: string) {
   );
 }
 
-// Amount actually released to `recipient` by complete() — the ONLY trusted
+// Amount actually released to `recipient` by complete() - the ONLY trusted
 // source for the forward amount (M2). Requires EXACTLY one matching event
 // (review H1): with nonzero fee BPs the agent (provider AND evaluator) could
 // receive two legs, and silently picking the first would forward the wrong
@@ -165,13 +165,13 @@ export function parsePaymentReleasedAmount(
     throw new Error(
       `expected exactly 1 PaymentReleased(jobId=${jobId}, to=${recipient}) in tx ` +
         `${receipt.transactionHash}, found ${hits.length}` +
-        (hits.length > 1 ? " — provider/evaluator legs ambiguous, manual recovery" : ""),
+        (hits.length > 1 ? " - provider/evaluator legs ambiguous, manual recovery" : ""),
     );
   }
   return hits[0].args.amount;
 }
 
-// claimRefund(jobId) — client-only (PRD-ERRATA E3); exposed for the asker
+// claimRefund(jobId) - client-only (PRD-ERRATA E3); exposed for the asker
 // wallet path in the UI, never callable by the agent.
 export async function claimRefund(ctx: Ctx, jobId: bigint) {
   const { hash } = await writeAndWait(ctx, () =>

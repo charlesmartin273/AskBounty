@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { EvalResultsJson } from "@/lib/answers/answer-types";
 
 // Per-check evaluation results + the R3 error state: an LLM failure shows
-// "evaluation pending, retrying" with a manual Retry button — never a silent
+// "evaluation pending, retrying" with a manual Retry button - never a silent
 // hang. Retry hits POST /api/answers/[id]/retry (idempotent) and refreshes.
 export function EvalResultsList({
   answerId,
@@ -45,7 +45,7 @@ export function EvalResultsList({
           </span>
           <span>
             <span className="font-mono text-xs">{r.check}</span>{" "}
-            <span className="text-muted-foreground">— {r.detail}</span>
+            <span className="text-muted-foreground">- {r.detail}</span>
           </span>
         </div>
       ))}
@@ -55,7 +55,7 @@ export function EvalResultsList({
           <p className="font-medium text-amber-800">Evaluation pending, retrying</p>
           <p className="mt-1 break-all text-xs text-amber-800">
             LLM error ({error.code}): {error.message}
-            {error.retryable ? " — retry should succeed." : " — needs a config fix or manual retry."}
+            {error.retryable ? " - retry should succeed." : " - needs a config fix or manual retry."}
           </p>
           <Button size="sm" variant="outline" className="mt-2" disabled={retrying} onClick={retry}>
             {retrying ? "Retrying…" : "Retry evaluation"}

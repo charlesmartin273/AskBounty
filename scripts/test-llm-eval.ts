@@ -24,7 +24,7 @@ async function getLogsChunked(client, filter, from: bigint, to: bigint) {
         logs.push(...await client.getLogs({ ...filter, fromBlock: start, toBlock: end }));
         break;
       } catch (err) {
-        if (attempt === 2) throw err; // chunk failed 3x — surface it
+        if (attempt === 2) throw err; // chunk failed 3x - surface it
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
       }
     }

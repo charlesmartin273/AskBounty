@@ -7,13 +7,13 @@ import { getQuestionRow, jsonError } from "@/lib/questions/question-api-helpers"
 import { isQuestionId } from "@/lib/questions/question-id";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
-// POST /api/questions/[id]/refund — records an onchain claimRefund.
-// PRD-ERRATA E6: claimRefund is PERMISSIONLESS as to caller — the contract
+// POST /api/questions/[id]/refund - records an onchain claimRefund.
+// PRD-ERRATA E6: claimRefund is PERMISSIONLESS as to caller - the contract
 // always pays the job's CLIENT (asker), so any successful trigger is
 // legitimate and no `from` check applies. What the route must prove is that
 // the submitted hash IS the refund of THIS job (a forged hash must never
 // flip the public status or plant a wrong receipt link):
-//   1. question must be 'expired' (409 otherwise — also kills double-record)
+//   1. question must be 'expired' (409 otherwise - also kills double-record)
 //   2. no accepted answer may exist (belt-and-braces; accepted => 'answered')
 //   3. receipt succeeded AND tx.to == escrow contract
 //   4. tx INPUT decodes to claimRefund(jobId) for exactly this question's job
@@ -50,7 +50,7 @@ export async function POST(
     .eq("status", "accepted");
   if (accErr) return jsonError(500, `answers read failed: ${accErr.message}`);
   if ((acceptedCount ?? 0) > 0) {
-    return jsonError(409, "question has an accepted answer — refund not applicable");
+    return jsonError(409, "question has an accepted answer - refund not applicable");
   }
 
   let receipt, tx;
@@ -70,7 +70,7 @@ export async function POST(
   }
   // The strong check (E6/review M1): the calldata must BE claimRefund for
   // exactly this question's job. Any other function (createJob, fund, …) or
-  // any other jobId fails to decode/match — the receipt link is unforgeable.
+  // any other jobId fails to decode/match - the receipt link is unforgeable.
   try {
     const decoded = decodeFunctionData({
       abi: agenticCommerceAbi,

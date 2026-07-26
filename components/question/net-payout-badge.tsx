@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { usdcDisplay } from "@/lib/format-usdc";
 
 // The number promised BEFORE anyone writes a word (PRD-ERRATA E2, yêu cầu 1).
-// Values come from the DB snapshot taken at question creation — NOT re-read —
+// Values come from the DB snapshot taken at question creation - NOT re-read -
 // so later admin fee changes never change what this page promised.
 export function NetPayoutBadge({
   budget,

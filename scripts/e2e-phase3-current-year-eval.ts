@@ -1,10 +1,10 @@
-// Phase 3 PERMANENT regression E2E — time-sensitive evaluation. Found via
+// Phase 3 PERMANENT regression E2E - time-sensitive evaluation. Found via
 // manual testing: the LLM has no clock, so it rejected the CORRECT current
 // year using its stale training data ("2026 is incorrect as the current year
 // is 2024"). The prompt now injects the server date at call time. This
 // script is deliberately YEAR-AGNOSTIC: it computes the current year from
 // the system clock at run time (never hardcoded), so it still asserts the
-// right thing in 2030 — current year passes, current year + 1 fails.
+// right thing in 2030 - current year passes, current year + 1 fails.
 // Needs: dev server (E2E_BASE_URL), funded asker wallet, valid GEMINI key.
 // Run: npx tsx scripts/e2e-phase3-current-year-eval.ts
 import {

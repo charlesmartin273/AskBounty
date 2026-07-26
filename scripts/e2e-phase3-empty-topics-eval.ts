@@ -1,4 +1,4 @@
-// Phase 3 PERMANENT regression E2E — empty-topics evaluation branch. Found
+// Phase 3 PERMANENT regression E2E - empty-topics evaluation branch. Found
 // via manual testing: with topics=[] the old prompt never showed the LLM the
 // question, so terse-but-correct answers ("19" for "what is 9+10") failed as
 // "no context". The prompt now embeds the question (own delimiter, context

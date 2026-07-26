@@ -9,7 +9,7 @@ import { arcscanTxUrl } from "@/lib/chain/config";
 // Payout receipt (R4): BOTH transactions of the Option B two-hop payout with
 // Arcscan links, so anyone can verify the agent kept nothing. If the escrow
 // released a different amount than the snapshot promised (fee drift), both
-// numbers are shown — the FULL released amount was still forwarded.
+// numbers are shown - the FULL released amount was still forwarded.
 export function PayoutReceipt({
   answer,
   netPayout,
@@ -25,7 +25,7 @@ export function PayoutReceipt({
     return (
       <div className="rounded-lg border border-amber-400 bg-amber-50 p-4">
         <p className="font-medium text-amber-800">
-          Answer accepted — payout pending, retrying
+          Answer accepted - payout pending, retrying
         </p>
         <p className="mt-1 text-sm text-amber-800">
           The escrow payout to {short(winner)} has not completed yet.
@@ -55,7 +55,7 @@ export function PayoutReceipt({
           ⚠ Fee change detected: the snapshot at question creation promised{" "}
           {paid.discrepancy.expectedNet} USDC, the escrow released{" "}
           {paid.discrepancy.released} USDC. The FULL released
-          amount was forwarded to the winner — the agent retained nothing.
+          amount was forwarded to the winner - the agent retained nothing.
         </p>
       )}
       {answer.completeTx && (
@@ -65,7 +65,7 @@ export function PayoutReceipt({
         <TxLink label="2. agent wallet → winner (forward)" hash={answer.forwardTx} />
       )}
       <p className="text-xs text-green-800">
-        Both transactions are public — verify on Arcscan that the agent kept
+        Both transactions are public - verify on Arcscan that the agent kept
         nothing.
       </p>
     </div>

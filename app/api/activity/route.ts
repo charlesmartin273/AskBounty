@@ -5,7 +5,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 
-// GET /api/activity?address=0x… — the wallet's asked questions + submitted
+// GET /api/activity?address=0x… - the wallet's asked questions + submitted
 // answers. Reads the DB, but the payout label the UI derives from this data
 // follows "chain is truth" (C4): answers carry payout_status + forward_tx,
 // and 'paid' is only ever written after both onchain receipts succeeded.

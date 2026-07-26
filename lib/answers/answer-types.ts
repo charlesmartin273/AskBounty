@@ -1,14 +1,14 @@
 import type { EvalError } from "../eval/evaluate-answer";
 import type { CheckResult } from "../eval/objective-checks";
 
-// Shared answer shapes — client-safe (types only + a pure projection).
+// Shared answer shapes - client-safe (types only + a pure projection).
 // Server-side reads live in answer-queries.ts.
 
 export interface PaidInfo {
   amount: string; // USDC decimal string actually forwarded to the winner
   // Present ONLY when PaymentReleased.amount != the net_payout snapshot
-  // (admin fee drift). The FULL released amount is still forwarded — the
-  // agent never retains residue — and both numbers are shown on the receipt.
+  // (admin fee drift). The FULL released amount is still forwarded - the
+  // agent never retains residue - and both numbers are shown on the receipt.
   discrepancy?: { expectedNet: string; released: string };
 }
 

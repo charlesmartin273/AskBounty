@@ -68,7 +68,7 @@ export function useFundingWizard(questionId: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body ?? {}),
     });
-    // API error strings are already user-facing copy — pass through as-is
+    // API error strings are already user-facing copy - pass through as-is
     if (!res.ok) {
       throw new UserFacingError(
         (await res.json().catch(() => null))?.error ?? `HTTP ${res.status}`,
@@ -84,7 +84,7 @@ export function useFundingWizard(questionId: string) {
     try {
       const budgetRaw = usdcToRaw(question.budget);
       if (step === 4) {
-        // Review H1: escrow already Funded onchain but DB finalize failed —
+        // Review H1: escrow already Funded onchain but DB finalize failed -
         // retry ONLY the finalize call, no wallet interaction needed.
         busy("Verifying escrow onchain…");
         await post(`/api/questions/${question.id}/finalize`, {});
@@ -107,14 +107,14 @@ export function useFundingWizard(questionId: string) {
         await post(`/api/questions/${question.id}/set-budget`);
       } else if (step === 3) {
         // Review H1: if a previous attempt already funded the escrow (finalize
-        // failed mid-flight), skip straight to finalize — re-running fund
+        // failed mid-flight), skip straight to finalize - re-running fund
         // would revert and strand the user.
         const jobNow = await publicClient.readContract({
           address: AGENTIC_COMMERCE, abi: agenticCommerceAbi,
           functionName: "getJob", args: [BigInt(question.jobId!)],
         });
         if (jobNow.status === 1 /* Funded */) {
-          busy("Escrow already funded — verifying…");
+          busy("Escrow already funded - verifying…");
           await post(`/api/questions/${question.id}/finalize`, {});
           await refresh();
           return;

@@ -1,4 +1,4 @@
-// Phase 5 demo seeding — creates the 3 judge-facing questions on the target
+// Phase 5 demo seeding - creates the 3 judge-facing questions on the target
 // deployment (E2E_BASE_URL, default localhost):
 //   1. PAID:     1 lazy answer rejected with reasons + 1 strong answer
 //                accepted -> dual-tx receipt (escrow->agent, agent->winner).
@@ -21,7 +21,7 @@ import { claimRefund } from "../lib/escrow/escrow-writes";
 
 const REFUND_DEADLINE_MS = 10 * 60_000 + 30_000; // API minimum (10min) + margin
 
-// Demo question 1 — answered + paid. Reuses the proven criteria/answer pair
+// Demo question 1 - answered + paid. Reuses the proven criteria/answer pair
 // so the failed answer shows concrete per-check reasons and the strong one
 // passes objective checks + LLM topics.
 const PAID_Q = {
@@ -42,7 +42,7 @@ const PAID_Q = {
   },
 };
 
-// Demo question 2 — open, judge-answerable without writing code.
+// Demo question 2 - open, judge-answerable without writing code.
 const OPEN_Q = {
   title: "What is the gas token on Arc Testnet and how do I get testnet funds?",
   body: [
@@ -59,7 +59,7 @@ const OPEN_Q = {
   },
 };
 
-// Demo question 3 — expires with no answers, then refunded.
+// Demo question 3 - expires with no answers, then refunded.
 const REFUND_Q = {
   title: "Benchmark: Arc Testnet block times vs Base Sepolia under sustained load?",
   body: [
@@ -130,7 +130,7 @@ async function seedRefundCreate(asker: ReturnType<typeof makeSigner>) {
   return { questionId, deadlineAt };
 }
 
-// Stage 3b: after the deadline — sweep marks it expired, claimRefund returns
+// Stage 3b: after the deadline - sweep marks it expired, claimRefund returns
 // the budget to the asker, and the refund is recorded (calldata-verified).
 async function seedRefundFinish(
   asker: ReturnType<typeof makeSigner>, cronSecret: string, questionId: string,
@@ -150,13 +150,13 @@ async function seedRefundFinish(
   }).then((r) => r.json());
   console.log(`[refund-q] sweep -> ${JSON.stringify(swept)}`);
 
-  // Guard (review): claim ONLY once the DB says expired — a failed sweep
+  // Guard (review): claim ONLY once the DB says expired - a failed sweep
   // (bad CRON_SECRET) would otherwise empty the escrow while the question
   // stays 'open' and the /refund record 409s (inconsistent demo state).
   const afterSweep = await api("GET", `/api/questions/${questionId}`);
   if (afterSweep.data.question?.status !== "expired") {
     throw new Error(
-      `sweep did not expire ${questionId} (status=${afterSweep.data.question?.status}) — check CRON_SECRET / deadline`,
+      `sweep did not expire ${questionId} (status=${afterSweep.data.question?.status}) - check CRON_SECRET / deadline`,
     );
   }
 

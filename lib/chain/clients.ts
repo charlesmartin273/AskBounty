@@ -4,7 +4,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet } from "./config";
 import { arcTransport } from "./rpc-transport";
 
-// Read-only client — safe anywhere on the server.
+// Read-only client - safe anywhere on the server.
 export const publicClient = createPublicClient({
   chain: arcTestnet,
   transport: arcTransport(),
@@ -20,11 +20,11 @@ function buildAgentWallet() {
   const key = process.env.EVALUATOR_PRIVATE_KEY;
   if (!key) {
     throw new Error(
-      "EVALUATOR_PRIVATE_KEY is not set — agent wallet unavailable",
+      "EVALUATOR_PRIVATE_KEY is not set - agent wallet unavailable",
     );
   }
   return createWalletClient({
-    // nonceManager tracks pending nonces in-process (H2) — paired with the
+    // nonceManager tracks pending nonces in-process (H2) - paired with the
     // withAgentWallet queue so concurrent requests never collide on nonces.
     account: privateKeyToAccount(key as `0x${string}`, { nonceManager }),
     chain: arcTestnet,

@@ -1,4 +1,4 @@
-// Phase 3 AUDIT GATE step 3 — edge cases beyond the dedicated E2E scripts:
+// Phase 3 AUDIT GATE step 3 - edge cases beyond the dedicated E2E scripts:
 // empty/oversized/invalid payloads, submit to a draft question, retry-route
 // guards, and a concurrent duplicate submit from the SAME wallet.
 // Run: npx tsx scripts/e2e-phase3-edge-cases.ts
@@ -15,7 +15,7 @@ async function main() {
   const asker = makeSigner("DRYRUN_ASKER_PRIVATE_KEY");
   const winner = privateKeyToAccount(ensureWalletKey("DRYRUN_WINNER_PRIVATE_KEY"));
 
-  // A draft (never funded) question — cheap, no onchain txs needed.
+  // A draft (never funded) question - cheap, no onchain txs needed.
   const draft = await api("POST", "/api/questions", {
     askerAddress: asker.account.address,
     title: "E2E edge: draft target",
@@ -50,7 +50,7 @@ async function main() {
   record("EDGE submit to draft question -> 409", toDraft.status === 409,
     `${toDraft.status} ${toDraft.data.error ?? ""}`);
 
-  // EDGE 4: retry-route guards — malformed id and unknown id
+  // EDGE 4: retry-route guards - malformed id and unknown id
   const badId = await api("POST", "/api/answers/not-a-uuid/retry");
   const ghost = await api("POST", "/api/answers/00000000-0000-4000-8000-000000000000/retry");
   record("EDGE retry with malformed/unknown id -> 400/404",
@@ -70,7 +70,7 @@ async function main() {
 
   // EDGE 6: concurrent DUPLICATE submit, same wallet + same question (double
   // click past the UI guard). Cooldown check is read-before-insert, so both
-  // may slip in — record the honest outcome; safety net is the accept CAS.
+  // may slip in - record the honest outcome; safety net is the accept CAS.
   const [d1, d2] = await Promise.all([
     submitAnswer("DRYRUN_ANSWERER2_PRIVATE_KEY", draftId, GOOD_ANSWER),
     submitAnswer("DRYRUN_ANSWERER2_PRIVATE_KEY", draftId, GOOD_ANSWER),

@@ -1,4 +1,4 @@
-// Short, URL-safe question id — also written onchain as the job `description`
+// Short, URL-safe question id - also written onchain as the job `description`
 // (keep it short: description costs calldata). ~57 bits of entropy.
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
 

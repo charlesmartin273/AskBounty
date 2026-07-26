@@ -5,13 +5,13 @@ import { EvalResultsList } from "./eval-results-list";
 import { MarkdownPreview } from "./markdown-preview";
 
 // Answers under a question, submission order (= evaluation order:
-// first-pass-wins). Pending bodies are publicly readable by design — README
+// first-pass-wins). Pending bodies are publicly readable by design - README
 // documents the trade-off; acceptance order cannot be jumped by copying.
 export function AnswerList({ answers }: { answers: PublicAnswer[] }) {
   if (answers.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        No answers yet — be the first. The first answer passing all criteria
+        No answers yet - be the first. The first answer passing all criteria
         wins the bounty instantly.
       </p>
     );

@@ -36,7 +36,7 @@ export async function evaluateAnswer(
   question: QuestionContext,
   llm: LlmCaller = callLlm,
 ): Promise<EvalOutcome> {
-  // Objective checks ALWAYS run first, in code, independent of the LLM —
+  // Objective checks ALWAYS run first, in code, independent of the LLM -
   // the LLM is one signal, never the sole decider (holds for empty topics
   // too: min_words / has_code_block gate below applies unchanged).
   const results = runObjectiveChecks(body, criteria);
@@ -57,7 +57,7 @@ export async function evaluateAnswer(
     results.push({
       check: "topics_covered",
       pass,
-      detail: `${topicSummary}${topicSummary ? " — " : ""}${verdict.reasoning}`.slice(0, 1000),
+      detail: `${topicSummary}${topicSummary ? " - " : ""}${verdict.reasoning}`.slice(0, 1000),
     });
     return { outcome: pass ? "pass" : "fail", results };
   } catch (err) {
@@ -67,7 +67,7 @@ export async function evaluateAnswer(
         results,
         error: {
           code: err.code,
-          // Single line, capped — this string lands in publicly readable
+          // Single line, capped - this string lands in publicly readable
           // eval_results (review L4), so keep provider payloads terse.
           message: err.message.replace(/\s+/g, " ").slice(0, 200),
           retryable: err.retryable,
@@ -81,7 +81,7 @@ export async function evaluateAnswer(
         error: { code: "bad_response", message: err.message, retryable: false },
       };
     }
-    // Unknown failure: still fail-closed — never accepted, manual retry only.
+    // Unknown failure: still fail-closed - never accepted, manual retry only.
     return {
       outcome: "error",
       results,

@@ -1,4 +1,4 @@
-// Phase 4 E2E — browse leak-proofing (C3) + activity data contract (C4).
+// Phase 4 E2E - browse leak-proofing (C3) + activity data contract (C4).
 // Fixture-driven (no chain writes). C4: an accepted answer whose payout has
 // NOT completed must surface payoutStatus!=paid so the UI can never label it
 // bare "accepted"; a paid answer must carry forwardTx + exact paidAmount.

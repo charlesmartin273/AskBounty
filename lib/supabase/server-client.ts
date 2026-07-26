@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Service-role Supabase client — the ONLY writer in the system (RLS denies
+// Service-role Supabase client - the ONLY writer in the system (RLS denies
 // all client-side writes). Never import from a client component.
 let cached: SupabaseClient | null = null;
 

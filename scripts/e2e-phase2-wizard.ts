@@ -54,7 +54,7 @@ async function main() {
   const { questionId, agentAddress, netPayout, deadlineUnix } = created.data;
   console.log(`[draft] ${questionId} netPayout=${netPayout}`);
 
-  // step 1 — asker creates job (same call the browser wizard makes)
+  // step 1 - asker creates job (same call the browser wizard makes)
   const { hash: createTx, jobId } = await createJob(askerCtx, {
     provider: agentAddress, evaluator: agentAddress,
     expiredAt: BigInt(deadlineUnix), description: questionId,
@@ -71,7 +71,7 @@ async function main() {
   record("EDGE finalize before fund rejected", early.status === 409, `${early.status} ${early.data.error ?? ""}`);
 
   await pause(1500);
-  // step 2 — backend setBudget
+  // step 2 - backend setBudget
   const sb1 = await api("POST", `/api/questions/${questionId}/set-budget`);
   record("step2 setBudget", sb1.status === 200, JSON.stringify(sb1.data));
   // EDGE 2: set-budget retry is idempotent (no second tx)
@@ -82,7 +82,7 @@ async function main() {
   record("resume after step 2 -> step 3", resume2.data.wizard?.step === 3, `wizard=${JSON.stringify(resume2.data.wizard)}`);
 
   await pause(1500);
-  // step 3 — asker approve + fund, then finalize
+  // step 3 - asker approve + fund, then finalize
   const { fundHash } = await approveAndFund(askerCtx, jobId, 1_000_000n);
   const fin = await api("POST", `/api/questions/${questionId}/finalize`, { fundTx: fundHash });
   record("step3 finalize after fund", fin.status === 200, `fund tx=${fundHash}`);

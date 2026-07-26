@@ -1,4 +1,4 @@
-// Phase 4 E2E — cron sweep (C1) + browse leak-proofing (C3). DB fixtures
+// Phase 4 E2E - cron sweep (C1) + browse leak-proofing (C3). DB fixtures
 // only (the sweep never touches the chain): one open+past-deadline question
 // must flip to expired; answered/draft/open-future rows must be untouched;
 // a second run is idempotent. Browse must show ONLY the live fixture.

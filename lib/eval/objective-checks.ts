@@ -1,6 +1,6 @@
 import type { Criteria } from "../questions/criteria-schema";
 
-// Objective checks run FIRST, in code, for free — they are immune to prompt
+// Objective checks run FIRST, in code, for free - they are immune to prompt
 // injection and gate the (costly) LLM call (PRD §6). Isomorphic: no secrets,
 // safe to import from UI for type sharing.
 
@@ -14,7 +14,7 @@ export function wordCount(body: string): number {
   return body.trim().split(/\s+/).filter(Boolean).length;
 }
 
-// A fenced ``` block marker anywhere counts — the markdown preview renders
+// A fenced ``` block marker anywhere counts - the markdown preview renders
 // the same fences, so what passes here is what the asker sees as code.
 export function hasCodeBlock(body: string): boolean {
   return /```/.test(body);

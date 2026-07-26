@@ -23,10 +23,10 @@ interface AnsweredRow {
   payoutStatus: string | null; forwardTx: string | null; paidAmount: string | null;
 }
 
-// My activity (PRD §4.5). C4 — chain is truth: an accepted answer is NEVER
+// My activity (PRD §4.5). C4 - chain is truth: an accepted answer is NEVER
 // labeled plain "accepted"; it is either "Paid" (payout_status written only
 // after both onchain receipts, forward tx linked for verification) or
-// "Accepted — payout pending".
+// "Accepted - payout pending".
 export default function ActivityPage() {
   const { address, isConnected } = useAccount();
   const [tab, setTab] = useState<"asked" | "answered">("asked");
@@ -65,7 +65,7 @@ export default function ActivityPage() {
   const error = current?.error ?? null;
 
   const paidAnswers = data?.answered.filter((a) => a.payoutStatus === "paid") ?? [];
-  // bigint raw units — never float-sum USDC (review M3).
+  // bigint raw units - never float-sum USDC (review M3).
   const earningsRaw = paidAnswers.reduce(
     (s, a) => s + usdcToRaw(a.paidAmount ?? "0"),
     0n,
@@ -83,7 +83,7 @@ export default function ActivityPage() {
       )}
       <ErrorNote error={error} />
       {isConnected && !data && !error && (
-        // Loading: fetch in flight after connect — never a blank page.
+        // Loading: fetch in flight after connect - never a blank page.
         <div className="space-y-3">
           <div className="h-5 w-40 animate-pulse rounded-md bg-muted" />
           {[0, 1].map((i) => (
@@ -121,7 +121,7 @@ export default function ActivityPage() {
                             refunded ↗
                           </a>
                         ) : q.status === "expired" ? (
-                          <Link href={`/q/${q.id}`} className="underline">expired — claim refund</Link>
+                          <Link href={`/q/${q.id}`} className="underline">expired - claim refund</Link>
                         ) : (
                           q.status
                         )}
@@ -154,7 +154,7 @@ export default function ActivityPage() {
   );
 }
 
-// C4: derive the label from payout_status — never bare "accepted".
+// C4: derive the label from payout_status - never bare "accepted".
 function AnswerLabel({ a }: { a: AnsweredRow }) {
   if (a.status === "accepted" && a.payoutStatus === "paid") {
     return (
@@ -169,7 +169,7 @@ function AnswerLabel({ a }: { a: AnsweredRow }) {
     );
   }
   if (a.status === "accepted") {
-    return <span className="text-amber-700">Accepted — payout pending (retry on the question page)</span>;
+    return <span className="text-amber-700">Accepted - payout pending (retry on the question page)</span>;
   }
   return <span className="text-muted-foreground">{a.status}</span>;
 }

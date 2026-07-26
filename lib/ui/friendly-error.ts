@@ -7,21 +7,21 @@ export interface FriendlyError {
 }
 
 // For errors whose message is ALREADY user-facing copy (API `error` strings
-// like "cooldown: wait 58s…") — passed through as the headline untouched.
+// like "cooldown: wait 58s…") - passed through as the headline untouched.
 export class UserFacingError extends Error {}
 
 const RULES: { pattern: RegExp; message: string }[] = [
   {
     pattern: /user rejected|user denied|rejected the request|action_rejected/i,
-    message: "Request cancelled in your wallet — nothing was sent.",
+    message: "Request cancelled in your wallet - nothing was sent.",
   },
   {
     pattern: /insufficient funds|exceeds balance|transfer amount exceeds|insufficient balance/i,
-    message: "Not enough USDC in this wallet. On Arc, USDC also pays gas — top up at faucet.circle.com.",
+    message: "Not enough USDC in this wallet. On Arc, USDC also pays gas - top up at faucet.circle.com.",
   },
   {
     pattern: /chain mismatch|wrong chain|does not match the target chain/i,
-    message: "Wrong network — switch your wallet to Arc Testnet and retry.",
+    message: "Wrong network - switch your wallet to Arc Testnet and retry.",
   },
   {
     pattern: /rate limit|429|too many requests/i,
@@ -29,14 +29,14 @@ const RULES: { pattern: RegExp; message: string }[] = [
   },
   {
     pattern: /fetch failed|failed to fetch|network error|timed? ?out|econnre/i,
-    message: "Network hiccup — check your connection and retry.",
+    message: "Network hiccup - check your connection and retry.",
   },
 ];
 
 export function toFriendlyError(err: unknown): FriendlyError {
   if (err instanceof UserFacingError) {
     return /^HTTP \d+$/.test(err.message)
-      ? { message: `The server returned an error (${err.message}) — please retry.` }
+      ? { message: `The server returned an error (${err.message}) - please retry.` }
       : { message: err.message };
   }
   const raw =

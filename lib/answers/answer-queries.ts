@@ -2,7 +2,7 @@ import "server-only";
 import { getSupabaseServerClient } from "../supabase/server-client";
 import type { AnswerRow } from "./answer-types";
 
-// Server-side answer reads (service-role). Ordered by created_at ASC —
+// Server-side answer reads (service-role). Ordered by created_at ASC -
 // first-pass-wins display order matches evaluation order.
 
 export async function getAnswersForQuestion(

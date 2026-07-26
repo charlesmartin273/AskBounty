@@ -64,7 +64,7 @@ async function main() {
   console.log(`asker  = ${asker.account.address}`);
   console.log(`winner = ${winner}`);
 
-  // (a) live fee BPs — never hardcode (PRD-ERRATA E2)
+  // (a) live fee BPs - never hardcode (PRD-ERRATA E2)
   const bps = await readFeeBps(publicClient);
   console.log(`\n[fees] platformFeeBP  = ${bps.platformFeeBP}`);
   console.log(`[fees] evaluatorFeeBP = ${bps.evaluatorFeeBP}`);
@@ -73,7 +73,7 @@ async function main() {
   const netBudget = computeNetPayout(BUDGET, bps);
   console.log(`[fees] dry-run ${usdcFmt(BUDGET)} -> net ${usdcFmt(netBudget)}`);
 
-  // balance preflight — gas on Arc is USDC; abort with funding instructions.
+  // balance preflight - gas on Arc is USDC; abort with funding instructions.
   // Sequential reads: the public RPC rate-limits parallel bursts.
   const askerBal = await getUsdcBalance(publicClient, asker.account.address);
   const agentBal = await getUsdcBalance(publicClient, agent.account.address);

@@ -38,7 +38,7 @@ export async function getQuestionRow(id: string): Promise<QuestionRow | null> {
   return (data as QuestionRow) ?? null;
 }
 
-// Public projection — everything on the row is public by design (RLS allows
+// Public projection - everything on the row is public by design (RLS allows
 // read), this just keeps API responses stable and explicit.
 export function toPublicQuestion(row: QuestionRow) {
   return {

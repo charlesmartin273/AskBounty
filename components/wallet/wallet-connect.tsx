@@ -22,7 +22,7 @@ export function WalletConnect() {
           {isPending ? "Connecting…" : "Connect wallet"}
         </Button>
         {connectors.length === 0 && (
-          <p className="text-xs text-red-600">No injected wallet found — install MetaMask.</p>
+          <p className="text-xs text-red-600">No injected wallet found - install MetaMask.</p>
         )}
         {error && <p className="text-xs text-red-600">{toFriendlyError(error).message}</p>}
       </div>

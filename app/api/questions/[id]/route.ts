@@ -10,7 +10,7 @@ import {
   toPublicQuestion,
 } from "@/lib/questions/question-api-helpers";
 
-// GET /api/questions/[id] — question + wizard resume state (yêu cầu 3).
+// GET /api/questions/[id] - question + wizard resume state (yêu cầu 3).
 // The wizard step is derived from DB + ONCHAIN truth, never from client
 // memory, so closing the tab mid-flow loses nothing.
 export async function GET(
@@ -32,7 +32,7 @@ export async function GET(
     onchain = { status: job.status, budget: job.budget.toString() };
     const expected = usdcToRaw(row.budget);
     if (job.status === JOB_STATUS.Funded && job.budget === expected) {
-      step = 4; // funded onchain, finalize pending — client should call finalize
+      step = 4; // funded onchain, finalize pending - client should call finalize
     } else if (job.budget === expected) {
       step = 3; // budget set, waiting for approve+fund
     } else {

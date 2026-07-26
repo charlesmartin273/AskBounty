@@ -1,7 +1,7 @@
 import type { LlmVerdict } from "./llm-client";
 
 // M3 fail-closed: the LLM verdict is untrusted output. ANY shape violation
-// throws, and the caller maps that to "evaluation error" — NEVER to accepted.
+// throws, and the caller maps that to "evaluation error" - NEVER to accepted.
 // Gemini's responseSchema usually guarantees the shape, but a provider swap,
 // API drift or partial output must not be able to slip a truthy blob through.
 
@@ -26,7 +26,7 @@ export function validateVerdict(raw: unknown): LlmVerdict {
     fail("reasoning must be a non-empty string");
   }
   if (!Array.isArray(v.topics)) fail("topics must be an array");
-  // Review L1: [].every() is vacuously true — an empty topics list must never
+  // Review L1: [].every() is vacuously true - an empty topics list must never
   // be able to carry a pass.
   if (v.topics.length === 0) fail("topics must not be empty");
   for (const entry of v.topics) {

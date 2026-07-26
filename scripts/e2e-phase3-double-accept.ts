@@ -1,4 +1,4 @@
-// Phase 3 dedicated E2E — M1 double-accept guard: two concurrent PASSING
+// Phase 3 dedicated E2E - M1 double-accept guard: two concurrent PASSING
 // submissions to the SAME question must yield exactly ONE accepted answer and
 // exactly ONE onchain payout; the loser fails deterministically via the CAS.
 // Also probes the one_accepted_per_question unique index (DB backstop).
@@ -22,7 +22,7 @@ async function main() {
   record("both submissions reached the API", r1.status === 200 && r2.status === 200,
     `statuses ${r1.status}/${r2.status}`);
 
-  // Gemini free tier may 429 one of the concurrent evals — resolve via retry.
+  // Gemini free tier may 429 one of the concurrent evals - resolve via retry.
   const a1 = await resolvePendingEval(r1.data.answer.id, 8);
   const a2 = await resolvePendingEval(r2.data.answer.id, 8);
   const accepted = [a1, a2].filter((a) => a.status === "accepted");
@@ -46,7 +46,7 @@ async function main() {
   const { error: dupErr, data: dupRow } = await db().from("answers").insert({
     question_id: questionId,
     answerer_address: "0x000000000000000000000000000000000000dEaD",
-    body: "index probe — must be rejected",
+    body: "index probe - must be rejected",
     status: "accepted",
     content_hash: "0x0", signature: "0x0",
   }).select("id");
@@ -56,10 +56,10 @@ async function main() {
   record(
     "unique index one_accepted_per_question blocks a 2nd accepted row",
     !!dupErr,
-    dupErr ? `insert rejected: ${dupErr.message}` : "INSERT UNEXPECTEDLY SUCCEEDED — migration-003 not applied?",
+    dupErr ? `insert rejected: ${dupErr.message}` : "INSERT UNEXPECTEDLY SUCCEEDED - migration-003 not applied?",
   );
 
-  console.log(`\nquestion: ${BASE}/q/${questionId} — winner answer ${winnerRow.id}`);
+  console.log(`\nquestion: ${BASE}/q/${questionId} - winner answer ${winnerRow.id}`);
   summarize("PHASE 3 DOUBLE-ACCEPT (M1)");
 }
 

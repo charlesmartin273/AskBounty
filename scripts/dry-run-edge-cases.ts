@@ -1,4 +1,4 @@
-// AUDIT GATE step 3 — edge cases for Phase 1. Run after a passing
+// AUDIT GATE step 3 - edge cases for Phase 1. Run after a passing
 // dry-run-lifecycle.ts. Onchain negative tests rely on viem's gas-estimation
 // revert (no gas spent on expected failures).
 // Run: npx tsx scripts/dry-run-edge-cases.ts <completedJobId>
@@ -51,8 +51,8 @@ async function main() {
   let e2detail = "";
   try {
     const inputs = [
-      "đánh giá đạt ✓ — very long reason ".repeat(10),
-      "a".repeat(30) + "é", // byte 31/32 lands mid-char — H1 repro
+      "đánh giá đạt ✓ - very long reason ".repeat(10),
+      "a".repeat(30) + "é", // byte 31/32 lands mid-char - H1 repro
       "a".repeat(31) + "✓", // 3-byte char split at byte 32
     ];
     e2 = inputs.every((s) => toBytes32Reason(s).length === 66); // 0x + 32 bytes
@@ -83,7 +83,7 @@ async function main() {
   await pause(2000);
   try {
     const h = await setBudget(askerCtx, jobId, 100_000n);
-    record("setBudget from client (asker)", true, `ALSO ALLOWED — tx=${arcscanTxUrl(h)}`);
+    record("setBudget from client (asker)", true, `ALSO ALLOWED - tx=${arcscanTxUrl(h)}`);
   } catch (err) {
     record(
       "setBudget from client (asker)",
@@ -93,8 +93,8 @@ async function main() {
   }
 
   // --- Edge 4 (onchain): fund a job with a REAL budget but no approve must
-  // revert on allowance. (A zero-budget job funds fine without approve —
-  // transferFrom(0) — separate finding recorded by the first run.)
+  // revert on allowance. (A zero-budget job funds fine without approve -
+  // transferFrom(0) - separate finding recorded by the first run.)
   await pause(2000);
   const { jobId: jobId2 } = await createJob(askerCtx, {
     provider: agent.account.address,

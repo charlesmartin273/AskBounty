@@ -1,4 +1,4 @@
-// Evaluation LLM client — currently Google Gemini free tier (PRD-ERRATA E5;
+// Evaluation LLM client - currently Google Gemini free tier (PRD-ERRATA E5;
 // PRD says Claude API, swapped for demo cost). PROVIDER-SWAPPABLE: to change
 // provider, edit ONLY this file and keep the exported interface intact.
 // Server-only by convention: GEMINI_API_KEY must never reach the client
@@ -13,8 +13,8 @@ const TIMEOUT_MS = 30_000;
 // LlmEvalError => answer shows "evaluation pending, retrying" + manual retry
 // button. NEVER silently hang, NEVER map a failure to "accepted".
 export type LlmErrorCode =
-  | "rate_limited" // 429 — free-tier quota; auto-retryable
-  | "auth" // 401/403 — key missing/invalid; needs config fix, manual retry
+  | "rate_limited" // 429 - free-tier quota; auto-retryable
+  | "auth" // 401/403 - key missing/invalid; needs config fix, manual retry
   | "timeout" // request exceeded TIMEOUT_MS; auto-retryable
   | "provider_error" // 5xx / network; auto-retryable
   | "bad_response"; // unparseable/blocked output; manual retry
@@ -30,7 +30,7 @@ export class LlmEvalError extends Error {
   }
 }
 
-// Verdict shape per PRD §3 — kept identical across providers.
+// Verdict shape per PRD §3 - kept identical across providers.
 export interface LlmVerdict {
   topics: { topic: string; covered: boolean }[];
   overall: boolean;
@@ -67,7 +67,7 @@ export async function callLlm<T = unknown>(args: {
   schema?: object;
 }): Promise<T> {
   if (typeof window !== "undefined") {
-    throw new Error("llm-client is server-only — never import client-side");
+    throw new Error("llm-client is server-only - never import client-side");
   }
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {

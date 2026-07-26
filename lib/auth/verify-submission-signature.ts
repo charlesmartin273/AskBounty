@@ -2,7 +2,7 @@ import { keccak256, recoverMessageAddress, toBytes } from "viem";
 
 // Canonical signed payload for answer submission (no sessions): each submit
 // proves wallet ownership by signing (questionId, keccak256(body)). This
-// module is isomorphic on purpose — the client builds the exact same message
+// module is isomorphic on purpose - the client builds the exact same message
 // it signs, and the SERVER recomputes the content hash from the raw body and
 // recovers the signer itself. The client-claimed address is only a cross-
 // check; the stored answerer_address is ALWAYS the recovered signer (R5).

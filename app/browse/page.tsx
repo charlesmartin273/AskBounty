@@ -40,7 +40,7 @@ export default async function BrowsePage() {
       </p>
       {questions.length === 0 ? (
         <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
-          No open bounties right now — be the first to ask one.
+          No open bounties right now - be the first to ask one.
         </p>
       ) : (
         <div className="space-y-3">

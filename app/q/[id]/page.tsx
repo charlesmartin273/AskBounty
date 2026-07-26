@@ -31,10 +31,10 @@ export async function generateMetadata({
 }
 
 // Public question page (server component). LIVE GUARD (yêu cầu 2): a
-// question renders as accepting answers ONLY when status === 'open' — which
+// question renders as accepting answers ONLY when status === 'open' - which
 // the finalize route grants only after verifying Funded + budget > 0
 // onchain. Drafts show a "not live" notice so nobody wastes effort.
-// Snapshot of the request-time clock (page is force-dynamic — one snapshot
+// Snapshot of the request-time clock (page is force-dynamic - one snapshot
 // per request; the live countdown is the client Countdown component).
 function deadlineState(deadline: string) {
   const msLeft = Date.parse(deadline) - Date.now();
@@ -70,7 +70,7 @@ export default async function QuestionPage({
         <div className="rounded-lg border border-amber-400 bg-amber-50 p-4">
           <h1 className="text-lg font-semibold">This question is not live yet</h1>
           <p className="mt-1 text-sm">
-            The bounty escrow has not been funded onchain. It is not accepting answers —
+            The bounty escrow has not been funded onchain. It is not accepting answers -
             do not spend effort on it. If you are the asker,{" "}
             <Link href="/ask" className="underline">resume funding here</Link>.
           </p>
@@ -117,7 +117,7 @@ export default async function QuestionPage({
             {/* PRD §6: the first-pass-wins rule is printed on every question
                 page so racing is fair and legible. */}
             <p className="text-xs text-muted-foreground">
-              First answer that passes all criteria wins the bounty — evaluation
+              First answer that passes all criteria wins the bounty - evaluation
               order is submission order.
             </p>
             <AnswerList answers={answers} />
@@ -129,7 +129,7 @@ export default async function QuestionPage({
                 <p className="font-medium">Your answer</p>
                 <WalletConnect />
               </div>
-              {/* Soft nudge only — never blocks (M2 UX companion). */}
+              {/* Soft nudge only - never blocks (M2 UX companion). */}
               {deadlineNear && (
                 <p className="text-xs text-amber-700">
                   Deadline is near: evaluation may not finish in time.
@@ -142,7 +142,7 @@ export default async function QuestionPage({
             // claimRefund is asker-wallet-only, the agent cannot do it).
             <section className="space-y-3 rounded-lg border border-amber-400 bg-amber-50 p-4">
               <p className="font-medium text-amber-800">
-                Question expired — no accepted answer. The asker can reclaim
+                Question expired - no accepted answer. The asker can reclaim
                 the escrowed bounty.
               </p>
               <WalletConnect />
@@ -172,8 +172,8 @@ export default async function QuestionPage({
           ) : (
             <p className="text-sm text-muted-foreground">
               {row.status === "answered"
-                ? "This question has an accepted answer — submissions are closed."
-                : "The deadline has passed — submissions are closed pending the daily expiry sweep."}
+                ? "This question has an accepted answer - submissions are closed."
+                : "The deadline has passed - submissions are closed pending the daily expiry sweep."}
             </p>
           )}
         </>

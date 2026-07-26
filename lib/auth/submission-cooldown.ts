@@ -14,7 +14,7 @@ export async function checkSubmissionCooldown(
     .from("answers")
     .select("created_at")
     .eq("question_id", questionId)
-    // Addresses are stored checksummed — compare case-insensitively. The
+    // Addresses are stored checksummed - compare case-insensitively. The
     // address contains no LIKE wildcards, so ilike is an exact match here.
     .ilike("answerer_address", answerer)
     .order("created_at", { ascending: false })

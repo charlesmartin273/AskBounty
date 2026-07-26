@@ -1,4 +1,4 @@
-// Phase 3 dedicated E2E — M2 forward-per-event: the amount forwarded to the
+// Phase 3 dedicated E2E - M2 forward-per-event: the amount forwarded to the
 // winner must equal PaymentReleased.amount parsed from the complete() receipt
 // (never recomputed from fee BPs). PASS = event amount == recorded paid
 // amount == winner balance delta == net_payout snapshot (BPs unchanged).

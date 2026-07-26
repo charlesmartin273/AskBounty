@@ -11,7 +11,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 const MAX_BODY_CHARS = 20_000;
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 
-// POST /api/answers — signed answer submission + trigger-on-submit
+// POST /api/answers - signed answer submission + trigger-on-submit
 // evaluation. Order is security-relevant (R5): the wallet signature is
 // verified BEFORE any DB write, and the stored answerer_address is the
 // RECOVERED signer, never the client-claimed value.
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     return jsonError(400, "invalid signature");
   }
 
-  // R5: signature check FIRST — nothing touches the DB on failure.
+  // R5: signature check FIRST - nothing touches the DB on failure.
   const auth = await verifySubmission({ questionId, body, address, signature });
   if (!auth.ok) return jsonError(401, `signature rejected: ${auth.reason}`);
 

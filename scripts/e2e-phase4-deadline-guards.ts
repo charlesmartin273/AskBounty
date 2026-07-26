@@ -1,4 +1,4 @@
-// Phase 4 PERMANENT regression E2E — the two deadline guards (review M2,
+// Phase 4 PERMANENT regression E2E - the two deadline guards (review M2,
 // user-approved fix): an answer must NEVER be accepted after the question's
 // deadline, and the failure reason must be honest (distinct from a content
 // failure). Exercised through the REAL retry route:
@@ -12,7 +12,7 @@
 import { api, db, record, summarize } from "./phase3-test-helpers";
 
 // Must match DEADLINE_MISS_REASON in lib/answers/process-answer-evaluation.ts
-// verbatim — asserting the honest user-facing copy is the point.
+// verbatim - asserting the honest user-facing copy is the point.
 const REASON =
   "Submitted in time, but evaluation did not finish before the deadline. " +
   "The bounty was refunded to the asker.";
@@ -32,7 +32,7 @@ async function makeFixture(
     status: "open", deadline: new Date(deadlineMs).toISOString(),
   });
   if (qErr) throw new Error(`question fixture: ${qErr.message}`);
-  // Pending answer with a recorded eval error — the state the retry route
+  // Pending answer with a recorded eval error - the state the retry route
   // legitimately re-evaluates (exactly the M2 window).
   const { data, error: aErr } = await client.from("answers").insert({
     question_id: id, answerer_address: "0x000000000000000000000000000000000000a1x9",

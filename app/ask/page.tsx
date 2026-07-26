@@ -136,7 +136,7 @@ export default function AskPage() {
           {netPreview !== null && budgetNum > 0 && (
             <p className="text-sm text-muted-foreground">
               Winner receives <strong>{netPreview.toFixed(2)} USDC</strong> after protocol fees
-              (live onchain read — locked in when you post).
+              (live onchain read - locked in when you post).
             </p>
           )}
           <CriteriaBuilder value={criteria} onChange={setCriteria} />

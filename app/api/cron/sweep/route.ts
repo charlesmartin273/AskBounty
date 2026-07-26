@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/questions/question-api-helpers";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 
-// GET /api/cron/sweep — daily Vercel cron (vercel.json, Hobby plan = 1×/day).
+// GET /api/cron/sweep - daily Vercel cron (vercel.json, Hobby plan = 1×/day).
 // Deliberately does ONE thing (user constraint C1): flip open questions whose
 // deadline has passed to 'expired', which is what unlocks the asker's
-// claim-refund button on /q/[id]. NO realtime work here — stuck evaluations
+// claim-refund button on /q/[id]. NO realtime work here - stuck evaluations
 // and payouts have their own manual Retry buttons; the sweep never touches
 // the chain or the agent wallet.
 export async function GET(req: Request) {

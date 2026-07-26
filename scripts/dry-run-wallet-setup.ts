@@ -7,7 +7,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 config({ path: ".env.local" });
 
 // Returns the private key for `envVar`, generating + persisting a throwaway
-// key into .env.local when missing (gitignored — dry-run only).
+// key into .env.local when missing (gitignored - dry-run only).
 export function ensureWalletKey(envVar: string): `0x${string}` {
   const existing = process.env[envVar];
   if (existing && existing.startsWith("0x")) return existing as `0x${string}`;

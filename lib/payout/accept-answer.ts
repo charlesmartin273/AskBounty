@@ -13,7 +13,7 @@ import { rawToUsdc, usdcToRaw } from "../format-usdc";
 import { getSupabaseServerClient } from "../supabase/server-client";
 import type { AnswerRow, EvalResultsJson, PaidInfo } from "../answers/answer-types";
 
-// Pacing between txs — the public Arc RPC rate-limits bursts (Phase 1 finding).
+// Pacing between txs - the public Arc RPC rate-limits bursts (Phase 1 finding).
 const TX_PACING_MS = 1500;
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -26,7 +26,7 @@ export interface PayoutOutcome {
 }
 
 // Option B payout: submit -> complete (escrow pays agent) -> forward the
-// EXACT PaymentReleased amount to the winner (M2; "số vào bằng số ra" — the
+// EXACT PaymentReleased amount to the winner (M2; "số vào bằng số ra" - the
 // agent never retains residue). Every step is resumable and claim-gated so a
 // retry can never double-pay; all agent-wallet txs are serialized (H2).
 export async function acceptAnswer(answerId: string): Promise<PayoutOutcome> {
@@ -45,7 +45,7 @@ async function runPayout(answerId: string): Promise<PayoutOutcome> {
   }
   const a = data as AnswerRow;
   if (a.status !== "accepted") {
-    throw new Error(`answer ${answerId} is not accepted — refusing to pay`);
+    throw new Error(`answer ${answerId} is not accepted - refusing to pay`);
   }
   if (a.payout_status === "paid") {
     return {
@@ -93,9 +93,9 @@ async function runPayout(answerId: string): Promise<PayoutOutcome> {
         await pause(TX_PACING_MS);
       } else if (job.status !== JOB_STATUS.Submitted) {
         // Completed with no recorded complete_tx = crash window between the
-        // tx and the DB write. Loud manual-recovery failure — never guess.
+        // tx and the DB write. Loud manual-recovery failure - never guess.
         throw new Error(
-          `job ${jobId} in status ${job.status} with no recorded complete_tx — manual recovery needed`,
+          `job ${jobId} in status ${job.status} with no recorded complete_tx - manual recovery needed`,
         );
       }
       const done = await completeJob(ctx, jobId, `askbounty:${a.id.slice(0, 8)}`);
@@ -119,7 +119,7 @@ async function runPayout(answerId: string): Promise<PayoutOutcome> {
       };
       console.warn(
         `[payout] PaymentReleased ${paid.discrepancy.released} != snapshot ${paid.discrepancy.expectedNet} USDC ` +
-          `for ${a.question_id} (fee BPs drifted?) — forwarding the FULL released amount, agent retains nothing`,
+          `for ${a.question_id} (fee BPs drifted?) - forwarding the FULL released amount, agent retains nothing`,
       );
     }
 
@@ -145,7 +145,7 @@ async function runPayout(answerId: string): Promise<PayoutOutcome> {
       .eq("id", answerId);
     return { payoutStatus: "paid", completeTx, forwardTx, paid };
   } catch (err) {
-    // viem puts the revert reason on line 2 — keep the first lines
+    // viem puts the revert reason on line 2 - keep the first lines
     const msg =
       err instanceof Error
         ? err.message.split("\n").filter(Boolean).slice(0, 3).join(" ")
@@ -165,7 +165,7 @@ async function runPayout(answerId: string): Promise<PayoutOutcome> {
 
 async function loadQuestionForPayout(questionId: string) {
   const db = getSupabaseServerClient();
-  // net_payout as ::text — NUMERIC through JSON loses precision at 15+ digits
+  // net_payout as ::text - NUMERIC through JSON loses precision at 15+ digits
   // (Phase 2 review L2); payout math must be exact to the unit.
   const { data, error } = await db
     .from("questions")
