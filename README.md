@@ -13,7 +13,7 @@ Three pre-seeded questions show every state of the money flow:
 | Link | What you'll see |
 |---|---|
 | [Answered & paid](https://askbounty.vercel.app/q/qmtplkbb783o) | A lazy answer **rejected with per-check reasons**, a strong answer **accepted**, and the dual-tx receipt - escrow→agent and agent→winner, both with Arcscan links proving the agent kept nothing. |
-| [Open bounty](https://askbounty.vercel.app/q/qriraz09r94x) | A live, funded question with 7 days left. Connect any wallet with a bit of Arc Testnet USDC and submit an answer - evaluation runs while you watch (submitting is free, you only sign a message). |
+| [Open bounty](https://askbounty.vercel.app/q/qk5nrg5fztw6) | A live, funded question with 7 days left. Connect any wallet with a bit of Arc Testnet USDC and submit an answer - evaluation runs while you watch (submitting is free, you only sign a message). |
 | [Expired & refunded](https://askbounty.vercel.app/q/q3g982tmydva) | Nobody answered before the deadline → the locked bounty went back to the asker, with the refund tx linked. Funds can never be stranded. |
 
 To go through the full asker flow yourself: get Arc Testnet USDC from https://faucet.circle.com (network "Arc Testnet"), then [ask a question](https://askbounty.vercel.app/ask). USDC is also the gas token on Arc - one faucet visit covers both.

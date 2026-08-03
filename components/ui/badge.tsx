@@ -4,21 +4,37 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Badges are mono-uppercase chips (the t-label voice). Money-state variants
+ * (success / pending / fail / neutral) use the low-saturation state palette -
+ * NEVER the brand red (design-system.md §1.3, decision 2):
+ *   paid, accepted            -> success
+ *   open, payout_pending      -> pending
+ *   failed, payout_failed     -> fail
+ *   expired, refunded, draft  -> neutral
+ */
 const badgeVariants = cva(
-  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  // Type note: t-label at 11px instead of 12px - the scale's label preset
+  // overflows a 24px pill once a status word like "payout pending" is in it.
+  // Same family, weight and uppercase, one step tighter.
+  "group/badge inline-flex h-6 w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-transparent px-2.5 font-mono text-[11px] font-medium tracking-[0.3px] uppercase whitespace-nowrap transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
-        secondary:
-          "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
-        destructive:
-          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
-        outline:
-          "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
-        ghost:
-          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        /* quiet tag on paper - rgba(0,0,0,0.06), the Orionix category chip */
+        secondary: "bg-line-2 text-ink [a]:hover:bg-line-3",
+        outline: "border-line-3 text-ink [a]:hover:bg-muted",
+        ghost: "text-muted-ink hover:bg-muted",
+        link: "text-brand underline-offset-4 hover:underline",
+
+        /* --- money-state variants --- */
+        success: "border-success-line bg-success-bg text-success",
+        pending: "border-pending-line bg-pending-bg text-pending",
+        fail: "border-fail-line bg-fail-bg text-fail",
+        neutral: "border-neutral-state-line bg-neutral-state-bg text-neutral-state",
+        /* legacy alias kept so existing call sites compile; renders as fail */
+        destructive: "border-fail-line bg-fail-bg text-fail",
       },
     },
     defaultVariants: {

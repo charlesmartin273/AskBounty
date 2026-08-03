@@ -26,12 +26,12 @@ export function FundingWizard({ questionId }: { questionId: string }) {
     }
   }, [w.finalized, router, questionId]);
 
-  if (w.loading) return <p className="text-sm text-muted-foreground">Loading wizard state…</p>;
+  if (w.loading) return <p className="t-body-14 text-muted-ink">Loading wizard state…</p>;
   if (!w.question) {
     // Review M3: transient RPC/DB failure must not dead-end the wizard.
     return (
       <div className="space-y-2">
-        <p className="text-sm text-red-600">{w.error?.message ?? "Question not found"}</p>
+        <p className="t-body-14 text-fail">{w.error?.message ?? "Question not found"}</p>
         <Button variant="outline" onClick={() => void w.refresh()}>Retry loading</Button>
       </div>
     );
@@ -40,15 +40,15 @@ export function FundingWizard({ questionId }: { questionId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          Fund the bounty - {w.question.budget} USDC
+        <CardTitle>
+          Fund the bounty - <span className="t-num-lg">{w.question.budget} USDC</span>
         </CardTitle>
         {w.step === 4 ? (
-          <p className="text-sm text-green-700">
+          <p className="t-body-14 text-success">
             Escrow funded onchain - one last verification step below.
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">
+          <p className="t-body-14 text-muted-ink">
             Resumable: if you close this tab, come back and it continues from the same step.
           </p>
         )}
@@ -60,22 +60,24 @@ export function FundingWizard({ questionId }: { questionId: string }) {
               w.step > st.n ? "done" : w.step === st.n ? "current" : "todo";
             return (
               <li key={st.n} className="flex items-start gap-3">
+                {/* done -> success green, current -> ink (the system has no
+                    blue), todo -> quiet gray */}
                 <span
-                  className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`t-label mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
                     state === "done"
-                      ? "bg-green-600 text-white"
+                      ? "bg-success text-white"
                       : state === "current"
-                        ? "bg-blue-600 text-white"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-ink text-cream"
+                        : "bg-muted text-faint"
                   }`}
                 >
                   {state === "done" ? "✓" : st.n}
                 </span>
                 <div>
-                  <p className={`text-sm font-medium ${state === "todo" ? "text-muted-foreground" : ""}`}>
+                  <p className={`t-body-14-medium ${state === "todo" ? "text-faint" : "text-ink"}`}>
                     {st.title}
                   </p>
-                  <p className="text-xs text-muted-foreground">{st.desc}</p>
+                  <p className="t-body-14 text-muted-ink">{st.desc}</p>
                 </div>
               </li>
             );
@@ -83,11 +85,11 @@ export function FundingWizard({ questionId }: { questionId: string }) {
         </ol>
 
         {!w.connected && (
-          <p className="text-sm text-amber-700">Connect your wallet above to continue.</p>
+          <p className="t-body-14 text-pending">Connect your wallet above to continue.</p>
         )}
         {w.wrongWallet && (
-          <p className="text-sm text-red-600">
-            Connected wallet ≠ asker wallet ({w.question.askerAddress.slice(0, 8)}…). Switch
+          <p className="t-body-14 text-fail">
+            Connected wallet ≠ asker wallet (<span className="t-hash">{w.question.askerAddress.slice(0, 8)}…</span>). Switch
             accounts to continue.
           </p>
         )}

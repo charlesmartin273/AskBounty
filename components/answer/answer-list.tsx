@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import type { PublicAnswer } from "@/lib/answers/answer-types";
 import { EvalResultsList } from "./eval-results-list";
 import { MarkdownPreview } from "./markdown-preview";
@@ -10,7 +11,7 @@ import { MarkdownPreview } from "./markdown-preview";
 export function AnswerList({ answers }: { answers: PublicAnswer[] }) {
   if (answers.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="t-body-14 text-muted-ink">
         No answers yet - be the first. The first answer passing all criteria
         wins the bounty instantly.
       </p>
@@ -19,12 +20,12 @@ export function AnswerList({ answers }: { answers: PublicAnswer[] }) {
   return (
     <div className="space-y-4">
       {answers.map((a) => (
-        <div key={a.id} className="space-y-3 rounded-lg border p-4">
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="font-mono">
+        <div key={a.id} className="space-y-3 rounded-xl bg-paper p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="t-hash text-ink">
               {a.answererAddress.slice(0, 6)}…{a.answererAddress.slice(-4)}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="t-hash text-faint">
               {/* deterministic UTC format: SSR and client must render the
                   same text (locale/timezone formats hydration-mismatch) */}
               {new Date(a.createdAt).toISOString().slice(0, 16).replace("T", " ")} UTC
@@ -39,22 +40,20 @@ export function AnswerList({ answers }: { answers: PublicAnswer[] }) {
   );
 }
 
+// Answer lifecycle -> money-state palette (never brand red):
+// accepted -> success, failed -> fail, eval-error -> pending, else neutral.
 function StatusBadge({ answer }: { answer: PublicAnswer }) {
-  const style =
+  const variant =
     answer.status === "accepted"
-      ? "bg-green-100 text-green-800"
+      ? ("success" as const)
       : answer.status === "failed"
-        ? "bg-red-100 text-red-800"
+        ? ("fail" as const)
         : answer.evalResults?.error
-          ? "bg-amber-100 text-amber-800"
-          : "bg-secondary text-muted-foreground";
+          ? ("pending" as const)
+          : ("neutral" as const);
   const label =
     answer.status === "pending" && answer.evalResults?.error
       ? "evaluation pending, retrying"
       : answer.status;
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-xs uppercase ${style}`}>
-      {label}
-    </span>
-  );
+  return <Badge variant={variant}>{label}</Badge>;
 }

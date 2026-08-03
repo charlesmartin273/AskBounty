@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { SiteNav } from "@/components/site-nav";
 import { ErrorNote } from "@/components/ui/error-note";
-import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { arcscanTxUrl } from "@/lib/chain/config";
 import { rawToUsdc, usdcDisplay, usdcToRaw } from "@/lib/format-usdc";
 import {
@@ -74,54 +73,60 @@ export default function ActivityPage() {
   return (
     <main className="mx-auto w-full max-w-3xl space-y-6 p-6">
       <SiteNav />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">My activity</h1>
-        <WalletConnect />
-      </div>
+      {/* Wallet connect lives in the nav - no duplicate button here. */}
+      <h1 className="t-display-40 pt-2 text-ink">My activity</h1>
       {!isConnected && (
-        <p className="text-sm text-muted-foreground">Connect a wallet to see your questions and answers.</p>
+        <p className="t-body-14 text-muted-ink">
+          Connect a wallet (top right) to see your questions and answers.
+        </p>
       )}
       <ErrorNote error={error} />
       {isConnected && !data && !error && (
         // Loading: fetch in flight after connect - never a blank page.
         <div className="space-y-3">
-          <div className="h-5 w-40 animate-pulse rounded-md bg-muted" />
+          <div className="h-5 w-40 animate-pulse rounded-lg bg-muted" />
           {[0, 1].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg border bg-muted/50" />
+            <div key={i} className="h-16 animate-pulse rounded-xl bg-paper/60" />
           ))}
         </div>
       )}
       {isConnected && data && (
         <>
-          <div className="flex gap-4 text-sm">
+          {/* Tab toggle in the mono label voice; active = ink pill */}
+          <div className="flex gap-1">
             <button type="button" onClick={() => setTab("asked")}
-              className={tab === "asked" ? "font-semibold underline" : "text-muted-foreground"}>
+              className={`t-label cursor-pointer rounded-full px-3 py-1.5 transition-colors duration-300 ${
+                tab === "asked" ? "bg-ink text-cream" : "text-muted-ink hover:bg-muted"
+              }`}>
               Asked ({data.asked.length})
             </button>
             <button type="button" onClick={() => setTab("answered")}
-              className={tab === "answered" ? "font-semibold underline" : "text-muted-foreground"}>
+              className={`t-label cursor-pointer rounded-full px-3 py-1.5 transition-colors duration-300 ${
+                tab === "answered" ? "bg-ink text-cream" : "text-muted-ink hover:bg-muted"
+              }`}>
               Answered ({data.answered.length})
             </button>
           </div>
           {tab === "answered" && data.answered.length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Earnings: {rawToUsdc(earningsRaw)} USDC · Pass rate: {paidAnswers.length}/{data.answered.length}
+            <p className="t-body-14 text-muted-ink">
+              Earnings: <span className="t-num text-ink">{rawToUsdc(earningsRaw)} USDC</span>{" "}
+              · Pass rate: <span className="t-num text-ink">{paidAnswers.length}/{data.answered.length}</span>
             </p>
           )}
           <div className="space-y-3">
             {tab === "asked"
               ? data.asked.map((q) => (
-                  <div key={q.id} className="flex items-center justify-between gap-3 rounded-lg border p-4">
-                    <div className="min-w-0">
-                      <Link href={`/q/${q.id}`} className="truncate font-medium underline">{q.title}</Link>
-                      <p className="text-xs text-muted-foreground">
-                        {usdcDisplay(q.budget)} USDC ·{" "}
+                  <div key={q.id} className="flex items-center justify-between gap-3 rounded-xl bg-paper p-6">
+                    <div className="min-w-0 space-y-1">
+                      <Link href={`/q/${q.id}`} className="t-display-20 block truncate text-ink no-underline transition-opacity duration-300 hover:opacity-60">{q.title}</Link>
+                      <p className="t-body-14 text-muted-ink">
+                        <span className="t-num">{usdcDisplay(q.budget)} USDC</span> ·{" "}
                         {q.status === "refunded" && q.refund_tx ? (
-                          <a href={arcscanTxUrl(q.refund_tx)} target="_blank" rel="noopener noreferrer" className="underline">
+                          <a href={arcscanTxUrl(q.refund_tx)} target="_blank" rel="noopener noreferrer" className="text-brand no-underline hover:underline">
                             refunded ↗
                           </a>
                         ) : q.status === "expired" ? (
-                          <Link href={`/q/${q.id}`} className="underline">expired - claim refund</Link>
+                          <Link href={`/q/${q.id}`} className="text-brand no-underline hover:underline">expired - claim refund</Link>
                         ) : (
                           q.status
                         )}
@@ -130,22 +135,22 @@ export default function ActivityPage() {
                   </div>
                 ))
               : data.answered.map((a) => (
-                  <div key={a.id} className="flex items-center justify-between gap-3 rounded-lg border p-4">
-                    <div className="min-w-0">
-                      <Link href={`/q/${a.questionId}`} className="truncate font-medium underline">
+                  <div key={a.id} className="flex items-center justify-between gap-3 rounded-xl bg-paper p-6">
+                    <div className="min-w-0 space-y-1">
+                      <Link href={`/q/${a.questionId}`} className="t-display-20 block truncate text-ink no-underline transition-opacity duration-300 hover:opacity-60">
                         {a.questionTitle}
                       </Link>
-                      <p className="text-xs">
+                      <p className="t-body-14">
                         <AnswerLabel a={a} />
                       </p>
                     </div>
                   </div>
                 ))}
             {tab === "asked" && data.asked.length === 0 && (
-              <p className="text-sm text-muted-foreground">No questions asked yet.</p>
+              <p className="t-body-14 text-muted-ink">No questions asked yet.</p>
             )}
             {tab === "answered" && data.answered.length === 0 && (
-              <p className="text-sm text-muted-foreground">No answers submitted yet.</p>
+              <p className="t-body-14 text-muted-ink">No answers submitted yet.</p>
             )}
           </div>
         </>
@@ -158,10 +163,10 @@ export default function ActivityPage() {
 function AnswerLabel({ a }: { a: AnsweredRow }) {
   if (a.status === "accepted" && a.payoutStatus === "paid") {
     return (
-      <span className="text-green-700">
-        Paid {a.paidAmount ?? "?"} USDC{" "}
+      <span className="text-success">
+        Paid <span className="t-num">{a.paidAmount ?? "?"} USDC</span>{" "}
         {a.forwardTx && (
-          <a href={arcscanTxUrl(a.forwardTx)} target="_blank" rel="noopener noreferrer" className="underline">
+          <a href={arcscanTxUrl(a.forwardTx)} target="_blank" rel="noopener noreferrer" className="text-brand no-underline hover:underline">
             verify ↗
           </a>
         )}
@@ -169,7 +174,7 @@ function AnswerLabel({ a }: { a: AnsweredRow }) {
     );
   }
   if (a.status === "accepted") {
-    return <span className="text-amber-700">Accepted - payout pending (retry on the question page)</span>;
+    return <span className="text-pending">Accepted - payout pending (retry on the question page)</span>;
   }
-  return <span className="text-muted-foreground">{a.status}</span>;
+  return <span className="text-muted-ink">{a.status}</span>;
 }

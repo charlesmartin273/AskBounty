@@ -33,13 +33,15 @@ export default async function BrowsePage() {
   return (
     <main className="mx-auto w-full max-w-3xl space-y-6 p-6">
       <SiteNav />
-      <h1 className="text-2xl font-semibold">Open bounties</h1>
-      <p className="text-sm text-muted-foreground">
-        Every listed bounty is provably funded in escrow. First answer that
-        passes all criteria wins.
-      </p>
+      <div className="space-y-2 pt-2">
+        <h1 className="t-display-40 text-ink">Open bounties</h1>
+        <p className="t-body-14 text-muted-ink">
+          Every listed bounty is provably funded in escrow. First answer that
+          passes all criteria wins.
+        </p>
+      </div>
       {questions.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
+        <p className="t-body-14 rounded-xl border border-dashed border-line-4 p-8 text-center text-muted-ink">
           No open bounties right now - be the first to ask one.
         </p>
       ) : (

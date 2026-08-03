@@ -35,8 +35,8 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
 
   if (!isConnected || !address) {
     return (
-      <p className="text-sm text-muted-foreground">
-        Connect your wallet (top of this box) to submit an answer.
+      <p className="t-body-14 text-muted-ink">
+        Connect your wallet (top right of the page) to submit an answer.
       </p>
     );
   }
@@ -71,17 +71,22 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 text-sm">
+      {/* Write/Preview toggle in the mono label voice; active tab = ink pill */}
+      <div className="flex gap-1">
         <button
           type="button"
-          className={tab === "write" ? "font-semibold underline" : "text-muted-foreground"}
+          className={`t-label cursor-pointer rounded-full px-3 py-1.5 transition-colors duration-300 ${
+            tab === "write" ? "bg-ink text-cream" : "text-muted-ink hover:bg-muted"
+          }`}
           onClick={() => setTab("write")}
         >
           Write
         </button>
         <button
           type="button"
-          className={tab === "preview" ? "font-semibold underline" : "text-muted-foreground"}
+          className={`t-label cursor-pointer rounded-full px-3 py-1.5 transition-colors duration-300 ${
+            tab === "preview" ? "bg-ink text-cream" : "text-muted-ink hover:bg-muted"
+          }`}
           onClick={() => setTab("preview")}
         >
           Preview
@@ -96,9 +101,9 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
           disabled={busy}
         />
       ) : (
-        <div className="rounded-md border p-3">
+        <div className="rounded-xl border border-line-2 p-5">
           {body.trim() === "" ? (
-            <p className="text-sm text-muted-foreground">Nothing to preview yet.</p>
+            <p className="t-body-14 text-faint">Nothing to preview yet.</p>
           ) : (
             <MarkdownPreview body={body} />
           )}
@@ -108,14 +113,14 @@ export function AnswerEditor({ questionId }: { questionId: string }) {
         <Button onClick={submit} disabled={busy || body.trim() === ""}>
           {busy ? busyLabel || "Submitting…" : "Sign & submit answer"}
         </Button>
-        <span className="text-xs text-muted-foreground">
+        <span className="t-body-14 text-muted-ink">
           Free to submit - you only sign a message, no gas.
         </span>
       </div>
       <ErrorNote error={error} />
       {result && (
-        <div className="space-y-2 rounded-md border p-3">
-          <p className="text-sm font-medium">
+        <div className="space-y-2 rounded-xl border border-line-2 p-5">
+          <p className="t-body-14-medium text-ink">
             {result.status === "accepted"
               ? "🎉 Accepted - your answer won the bounty. Payout details below."
               : result.status === "failed"

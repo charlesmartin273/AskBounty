@@ -22,17 +22,17 @@ export function WalletConnect() {
           {isPending ? "Connecting…" : "Connect wallet"}
         </Button>
         {connectors.length === 0 && (
-          <p className="text-xs text-red-600">No injected wallet found - install MetaMask.</p>
+          <p className="t-body-12-medium text-fail">No injected wallet found - install MetaMask.</p>
         )}
-        {error && <p className="text-xs text-red-600">{toFriendlyError(error).message}</p>}
+        {error && <p className="t-body-12-medium text-fail">{toFriendlyError(error).message}</p>}
       </div>
     );
   }
 
   const wrongChain = chainId !== arcTestnet.id;
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="font-mono">
+    <div className="flex items-center gap-2">
+      <span className="t-hash text-ink">
         {address?.slice(0, 6)}…{address?.slice(-4)}
       </span>
       {wrongChain && (

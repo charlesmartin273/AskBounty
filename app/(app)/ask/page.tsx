@@ -10,7 +10,6 @@ import { CriteriaBuilder } from "@/components/ask/criteria-builder";
 import { FundingWizard } from "@/components/ask/funding-wizard";
 import { SiteNav } from "@/components/site-nav";
 import { ErrorNote } from "@/components/ui/error-note";
-import { WalletConnect } from "@/components/wallet/wallet-connect";
 import type { Criteria } from "@/lib/questions/criteria-schema";
 import {
   toFriendlyError,
@@ -83,14 +82,14 @@ export default function AskPage() {
   return (
     <main className="mx-auto w-full max-w-2xl space-y-6 p-6">
       <SiteNav />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">Ask a question</h1>
-        <WalletConnect />
-      </div>
+      {/* Wallet connect lives in the nav - no duplicate button here. */}
+      <h1 className="t-display-40 pt-2 text-ink">Ask a question</h1>
 
       {!activeId && resumeId && (
-        <div className="flex items-center justify-between rounded-lg border border-amber-400 bg-amber-50 p-3 text-sm">
-          <span>You have an unfinished question ({resumeId}).</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-pending-line bg-pending-bg p-4">
+          <span className="t-body-14 text-ink">
+            You have an unfinished question (<span className="t-hash">{resumeId}</span>).
+          </span>
           <div className="flex gap-2">
             <Button size="sm" onClick={() => setActiveId(resumeId)}>Resume funding</Button>
             <Button size="sm" variant="outline"
@@ -104,7 +103,7 @@ export default function AskPage() {
       {activeId ? (
         <>
           {warnings.map((w) => (
-            <p key={w} className="rounded-md bg-amber-50 p-2 text-sm text-amber-800">⚠ {w}</p>
+            <p key={w} className="t-body-14 rounded-lg border border-pending-line bg-pending-bg p-3 text-pending">⚠ {w}</p>
           ))}
           <FundingWizard questionId={activeId} />
         </>
@@ -134,9 +133,9 @@ export default function AskPage() {
             </div>
           </div>
           {netPreview !== null && budgetNum > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Winner receives <strong>{netPreview.toFixed(2)} USDC</strong> after protocol fees
-              (live onchain read - locked in when you post).
+            <p className="t-body-14 text-muted-ink">
+              Winner receives <span className="t-num text-ink">{netPreview.toFixed(2)} USDC</span>{" "}
+              after protocol fees (live onchain read - locked in when you post).
             </p>
           )}
           <CriteriaBuilder value={criteria} onChange={setCriteria} />

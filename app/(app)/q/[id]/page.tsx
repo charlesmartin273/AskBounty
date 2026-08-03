@@ -5,10 +5,10 @@ import { AnswerList } from "@/components/answer/answer-list";
 import { Countdown } from "@/components/question/countdown";
 import { CriteriaDisplay } from "@/components/question/criteria-display";
 import { NetPayoutBadge } from "@/components/question/net-payout-badge";
+import { QuestionStatusBadge } from "@/components/question/question-status-badge";
 import { PayoutReceipt } from "@/components/receipt/payout-receipt";
 import { ClaimRefundButton } from "@/components/refund/claim-refund-button";
 import { SiteNav } from "@/components/site-nav";
-import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { getAnswersForQuestion } from "@/lib/answers/answer-queries";
 import { toPublicAnswer } from "@/lib/answers/answer-types";
 import { AGENTIC_COMMERCE } from "@/lib/chain/config";
@@ -67,22 +67,22 @@ export default async function QuestionPage({
       <SiteNav />
 
       {row.status === "draft" ? (
-        <div className="rounded-lg border border-amber-400 bg-amber-50 p-4">
-          <h1 className="text-lg font-semibold">This question is not live yet</h1>
-          <p className="mt-1 text-sm">
+        <div className="rounded-xl border border-pending-line bg-pending-bg p-6">
+          <h1 className="t-display-20 text-pending">This question is not live yet</h1>
+          <p className="t-body-14 mt-2 text-ink">
             The bounty escrow has not been funded onchain. It is not accepting answers -
             do not spend effort on it. If you are the asker,{" "}
-            <Link href="/ask" className="underline">resume funding here</Link>.
+            <Link href="/ask" className="text-brand underline">resume funding here</Link>.
           </p>
         </div>
       ) : (
         <>
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">{row.title}</h1>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="font-mono">{row.asker_address.slice(0, 6)}…{row.asker_address.slice(-4)}</span>
+          <div className="space-y-3">
+            <h1 className="t-display-40 text-ink">{row.title}</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="t-hash text-muted-ink">{row.asker_address.slice(0, 6)}…{row.asker_address.slice(-4)}</span>
               <Countdown deadline={row.deadline} />
-              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs uppercase">{row.status}</span>
+              <QuestionStatusBadge status={row.status} />
             </div>
           </div>
 
@@ -92,14 +92,15 @@ export default async function QuestionPage({
             platformFeeBp={row.platform_fee_bp ?? 0}
             evaluatorFeeBp={row.evaluator_fee_bp ?? 0}
           />
-          <p className="text-xs">
-            <a href={arcscanTx} target="_blank" rel="noopener noreferrer" className="underline">
+          <p className="t-body-12-medium">
+            <a href={arcscanTx} target="_blank" rel="noopener noreferrer" className="text-brand no-underline hover:underline">
               Verify escrow on Arcscan ↗
             </a>
-            {row.job_id !== null && <span className="ml-2 text-muted-foreground">job #{row.job_id}</span>}
+            {row.job_id !== null && <span className="t-hash ml-2 text-faint">job #{row.job_id}</span>}
           </p>
 
-          <div className="whitespace-pre-wrap rounded-lg border p-4 text-sm leading-6">
+          {/* Question body on a flat paper card - contrast, no border */}
+          <div className="t-body-16 whitespace-pre-wrap rounded-xl bg-paper p-6 text-ink">
             {row.body}
           </div>
 
@@ -112,11 +113,11 @@ export default async function QuestionPage({
             />
           )}
 
-          <section className="space-y-3">
-            <h2 className="font-medium">Answers ({answers.length})</h2>
+          <section className="space-y-3 pt-4">
+            <h2 className="t-display-24 text-ink">Answers ({answers.length})</h2>
             {/* PRD §6: the first-pass-wins rule is printed on every question
                 page so racing is fair and legible. */}
-            <p className="text-xs text-muted-foreground">
+            <p className="t-body-14 text-muted-ink">
               First answer that passes all criteria wins the bounty - evaluation
               order is submission order.
             </p>
@@ -124,14 +125,12 @@ export default async function QuestionPage({
           </section>
 
           {row.status === "open" && !deadlinePassed ? (
-            <section className="space-y-3 rounded-lg border p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium">Your answer</p>
-                <WalletConnect />
-              </div>
+            <section className="space-y-4 rounded-xl bg-paper p-6">
+              {/* Wallet connect lives in the nav - no duplicate button here. */}
+              <p className="t-display-20 text-ink">Your answer</p>
               {/* Soft nudge only - never blocks (M2 UX companion). */}
               {deadlineNear && (
-                <p className="text-xs text-amber-700">
+                <p className="t-body-12-medium text-pending">
                   Deadline is near: evaluation may not finish in time.
                 </p>
               )}
@@ -140,12 +139,11 @@ export default async function QuestionPage({
           ) : row.status === "expired" ? (
             // Refund path (opened by the daily cron sweep; PRD-ERRATA E3:
             // claimRefund is asker-wallet-only, the agent cannot do it).
-            <section className="space-y-3 rounded-lg border border-amber-400 bg-amber-50 p-4">
-              <p className="font-medium text-amber-800">
+            <section className="space-y-4 rounded-xl border border-pending-line bg-pending-bg p-6">
+              <p className="t-body-16-medium text-pending">
                 Question expired - no accepted answer. The asker can reclaim
                 the escrowed bounty.
               </p>
-              <WalletConnect />
               <ClaimRefundButton
                 questionId={row.id}
                 jobId={row.job_id!}
@@ -153,16 +151,16 @@ export default async function QuestionPage({
               />
             </section>
           ) : row.status === "refunded" ? (
-            <section className="space-y-1 rounded-lg border p-4">
-              <p className="font-medium">Bounty refunded to the asker.</p>
+            <section className="space-y-2 rounded-xl bg-neutral-state-bg p-6">
+              <p className="t-body-16-medium text-ink">Bounty refunded to the asker.</p>
               {row.refund_tx && (
-                <p className="text-sm">
+                <p className="t-body-14 text-muted-ink">
                   refund tx:{" "}
                   <a
                     href={`https://testnet.arcscan.app/tx/${row.refund_tx}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="break-all font-mono text-xs underline"
+                    className="t-hash break-all text-brand no-underline hover:underline"
                   >
                     {row.refund_tx} ↗
                   </a>
@@ -170,7 +168,7 @@ export default async function QuestionPage({
               )}
             </section>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="t-body-14 text-muted-ink">
               {row.status === "answered"
                 ? "This question has an accepted answer - submissions are closed."
                 : "The deadline has passed - submissions are closed pending the daily expiry sweep."}

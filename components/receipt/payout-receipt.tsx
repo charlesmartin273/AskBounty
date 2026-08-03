@@ -23,14 +23,15 @@ export function PayoutReceipt({
 
   if (answer.payoutStatus !== "paid") {
     return (
-      <div className="rounded-lg border border-amber-400 bg-amber-50 p-4">
-        <p className="font-medium text-amber-800">
+      <div className="rounded-xl border border-pending-line bg-pending-bg p-6">
+        <p className="t-body-16-medium text-pending">
           Answer accepted - payout pending, retrying
         </p>
-        <p className="mt-1 text-sm text-amber-800">
-          The escrow payout to {short(winner)} has not completed yet.
+        <p className="t-body-14 mt-1 text-ink">
+          The escrow payout to <span className="t-hash">{short(winner)}</span> has
+          not completed yet.
           {answer.evalResults?.payoutError && (
-            <span className="mt-1 block break-all text-xs">
+            <span className="t-hash mt-1 block break-all text-muted-ink">
               Last error: {answer.evalResults.payoutError}
             </span>
           )}
@@ -44,18 +45,20 @@ export function PayoutReceipt({
   }
 
   return (
-    <div className="space-y-2 rounded-lg border border-green-500 bg-green-50 p-4">
+    <div className="space-y-3 rounded-xl border border-success-line bg-success-bg p-6">
       {/* Exact decimal strings on purpose (review L6): a receipt inviting
           verification must never round the number it asks you to verify. */}
-      <p className="font-medium text-green-800">
-        Bounty paid: {amount} USDC → {short(winner)}
+      <p className="t-body-16-medium text-success">
+        Bounty paid: <span className="t-num-lg align-baseline">{amount} USDC</span>{" "}
+        → <span className="t-hash">{short(winner)}</span>
       </p>
       {paid?.discrepancy && (
-        <p className="text-sm text-amber-800">
+        <p className="t-body-14 text-pending">
           ⚠ Fee change detected: the snapshot at question creation promised{" "}
-          {paid.discrepancy.expectedNet} USDC, the escrow released{" "}
-          {paid.discrepancy.released} USDC. The FULL released
-          amount was forwarded to the winner - the agent retained nothing.
+          <span className="t-num">{paid.discrepancy.expectedNet} USDC</span>, the
+          escrow released <span className="t-num">{paid.discrepancy.released} USDC</span>.
+          The FULL released amount was forwarded to the winner - the agent
+          retained nothing.
         </p>
       )}
       {answer.completeTx && (
@@ -64,7 +67,7 @@ export function PayoutReceipt({
       {answer.forwardTx && (
         <TxLink label="2. agent wallet → winner (forward)" hash={answer.forwardTx} />
       )}
-      <p className="text-xs text-green-800">
+      <p className="t-body-14 text-success">
         Both transactions are public - verify on Arcscan that the agent kept
         nothing.
       </p>
@@ -74,13 +77,13 @@ export function PayoutReceipt({
 
 function TxLink({ label, hash }: { label: string; hash: string }) {
   return (
-    <p className="text-sm">
+    <p className="t-body-14 text-ink">
       {label}:{" "}
       <a
         href={arcscanTxUrl(hash)}
         target="_blank"
         rel="noopener noreferrer"
-        className="break-all font-mono text-xs underline"
+        className="t-hash break-all text-brand no-underline hover:underline"
       >
         {hash} ↗
       </a>
@@ -111,7 +114,7 @@ function RetryPayoutButton({ answerId }: { answerId: string }) {
       <Button size="sm" variant="outline" disabled={busy} onClick={retry}>
         {busy ? "Retrying payout…" : "Retry payout"}
       </Button>
-      {error && <p className="mt-1 break-all text-xs text-red-600">{error}</p>}
+      {error && <p className="t-body-12-medium mt-1 break-all text-fail">{error}</p>}
     </div>
   );
 }

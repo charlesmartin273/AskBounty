@@ -38,8 +38,8 @@ export function ClaimRefundButton({
 
   if (!isConnected || !address) {
     return (
-      <p className="text-sm text-muted-foreground">
-        Connect the asker wallet to claim the refund.
+      <p className="t-body-14 text-muted-ink">
+        Connect the asker wallet (top right of the page) to claim the refund.
       </p>
     );
   }
@@ -87,7 +87,7 @@ export function ClaimRefundButton({
         {busy ? busyLabel || "Claiming…" : "Claim refund"}
       </Button>
       {wrongWallet && (
-        <p className="text-xs text-muted-foreground">
+        <p className="t-body-12-medium text-muted-ink">
           Only the asker ({askerAddress.slice(0, 6)}…{askerAddress.slice(-4)})
           can claim this refund - switch to that wallet.
         </p>

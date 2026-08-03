@@ -24,9 +24,11 @@ export function Countdown({ deadline }: { deadline: string }) {
   return (
     // suppressHydrationWarning: server and client compute the remaining time
     // a few seconds apart (React #418 otherwise); the 1s interval corrects it.
+    // t-num: tabular digits so the ticking clock never jitters sideways.
+    // Expired uses the state-fail brick, not the brand red (decision 2).
     <span
       suppressHydrationWarning
-      className={text === "expired" ? "font-medium text-red-600" : "font-medium"}
+      className={text === "expired" ? "t-num text-fail" : "t-num text-ink"}
     >
       {text === "expired" ? "Deadline passed" : `Closes in ${text}`}
     </span>

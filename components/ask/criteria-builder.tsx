@@ -24,8 +24,8 @@ export function CriteriaBuilder({
   };
 
   return (
-    <div className="space-y-4 rounded-lg border p-4">
-      <h3 className="font-medium">Acceptance criteria</h3>
+    <div className="space-y-4 rounded-xl bg-paper p-6">
+      <h3 className="t-display-20 text-ink">Acceptance criteria</h3>
 
       <div className="flex flex-wrap items-center gap-3">
         <Label htmlFor="minWords" className="w-40 max-w-full">Minimum words</Label>
@@ -75,7 +75,7 @@ export function CriteriaBuilder({
           />
           <button
             type="button"
-            className="rounded-md border px-3 text-sm hover:bg-accent"
+            className="t-body-14-medium shrink-0 cursor-pointer rounded-full border border-line-3 px-4 text-ink transition-colors duration-300 hover:bg-muted"
             onClick={addTopic}
           >
             Add
@@ -83,21 +83,24 @@ export function CriteriaBuilder({
         </div>
         {/* Soft reminder only - never blocks submission. */}
         {value.topics.length === 0 && !value.mustIncludeCode && value.minWords < 10 && (
-          <p className="text-xs text-amber-700">
+          <p className="t-body-12-medium text-pending">
             No criteria set: the agent will judge whether the answer directly
             answers your question. Add criteria for more reliable evaluation.
           </p>
         )}
         <div className="flex flex-wrap gap-2">
           {value.topics.map((t) => (
+            // Quiet gray tag chip (bg-secondary is now pure white - invisible
+            // on the paper card, so use the black/6% tag fill instead)
             <span
               key={t}
-              className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs"
+              className="t-body-12-medium inline-flex items-center gap-1.5 rounded-full bg-line-2 px-3 py-1 text-ink"
             >
               {t}
               <button
                 type="button"
                 aria-label={`remove ${t}`}
+                className="cursor-pointer text-muted-ink transition-colors duration-300 hover:text-ink"
                 onClick={() =>
                   onChange({ ...value, topics: value.topics.filter((x) => x !== t) })
                 }

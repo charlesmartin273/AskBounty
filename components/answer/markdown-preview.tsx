@@ -4,12 +4,14 @@
 export function MarkdownPreview({ body }: { body: string }) {
   const segments = body.split("```");
   return (
-    <div className="space-y-2 text-sm leading-6">
+    <div className="t-body-14 space-y-2">
       {segments.map((seg, i) =>
         i % 2 === 1 ? (
+          // bg-muted (black/4%): visible on both cream page and white cards -
+          // bg-secondary is now pure white and would vanish on paper.
           <pre
             key={i}
-            className="overflow-x-auto rounded-md bg-secondary p-3 font-mono text-xs"
+            className="t-code overflow-x-auto rounded-lg bg-muted p-4"
           >
             {stripLanguageHint(seg)}
           </pre>

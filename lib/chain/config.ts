@@ -35,3 +35,6 @@ export const USDC_DECIMALS = 6;
 
 export const arcscanTxUrl = (hash: string) =>
   `https://testnet.arcscan.app/tx/${hash}`;
+
+export const arcscanAddressUrl = (address: string) =>
+  `https://testnet.arcscan.app/address/${address}`;

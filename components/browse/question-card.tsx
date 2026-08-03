@@ -13,17 +13,21 @@ export interface BrowseQuestion {
 // static label (the live countdown lives on the question page).
 export function QuestionCard({ q }: { q: BrowseQuestion }) {
   return (
+    // Paper card row, no border/shadow; the whole card is the link. Hover
+    // nudges opacity like every other interactive surface (300ms brand ease).
     <Link
       href={`/q/${q.id}`}
-      className="flex items-center justify-between gap-4 rounded-lg border p-4 hover:bg-accent"
+      className="flex items-center justify-between gap-4 rounded-xl bg-paper p-6 no-underline transition-opacity duration-300 ease-[cubic-bezier(0.44,0,0.56,1)] hover:opacity-70"
     >
-      <div className="min-w-0">
-        <p className="truncate font-medium">{q.title}</p>
-        <p className="text-xs text-muted-foreground">
-          winner receives {usdcDisplay(q.netPayout)} USDC · {timeLeft(q.deadline)}
+      <div className="min-w-0 space-y-1">
+        <p className="t-display-20 truncate text-ink">{q.title}</p>
+        <p className="t-body-14 text-muted-ink">
+          winner receives <span className="t-num">{usdcDisplay(q.netPayout)} USDC</span>{" "}
+          · {timeLeft(q.deadline)}
         </p>
       </div>
-      <span className="shrink-0 rounded-full bg-secondary px-3 py-1 text-sm font-medium">
+      {/* Bounty amount: mono chip on the quiet gray tag fill */}
+      <span className="t-num shrink-0 rounded-full bg-line-2 px-4 py-2 text-ink">
         {usdcDisplay(q.budget)} USDC
       </span>
     </Link>

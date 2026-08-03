@@ -1,16 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/**
+ * Fraunces - display serif, driven through its variable axes
+ * ("SOFT" 100, "WONK" 1 via font-variation-settings in globals.css).
+ * The axes must be requested here or next/font strips them from the file.
+ */
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  axes: ["SOFT", "WONK", "opsz"],
+  display: "swap",
 });
 
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+/* Geist Mono: USDC amounts, wallet addresses, tx hashes, labels. */
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -38,11 +52,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
-      </body>
+      {/* Providers (wagmi/react-query) moved into app/(app)/layout.tsx so the
+          marketing group stays free of web3 dependencies. */}
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

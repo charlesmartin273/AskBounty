@@ -64,6 +64,33 @@ No new external-fact conflicts → no new errata.
 
 ---
 
+## Regression note — wallet nav hydration (found 2026-07-31, branch `reskin-orionix`)
+
+**Symptom.** `/ask` and `/activity` threw a hydration exception on every load; Next devtools badge read "1 Issue". Not caught in Phase 5: the Step 5 console check ran on `/q/<id>` with **no wallet connected**, and the mismatch only appears when a wallet IS connected.
+
+**Evidence (before).** Console diff on `/ask`:
+
+```
+<div
++  className="flex items-center gap-2 text-sm"   ← client, wallet restored from storage
+-  className="flex flex-col gap-1"               ← server, disconnected branch
+```
+
+**Root cause.** `lib/wagmi-config.ts` called `createConfig` without `ssr`. Server renders `WalletConnect`'s disconnected branch; the client's first render already reported the storage-restored connection, so React discarded and rebuilt the nav subtree on each load. Distinct from the Phase 5 #418 fixes (`countdown.tsx` clock, `answer-list.tsx` locale) — same class of bug, third instance.
+
+**Fix.** `ssr: true` in `lib/wagmi-config.ts` (one line + comment). wagmi then hydrates disconnected and reconnects after mount, matching the server.
+
+**Evidence (after).**
+- `curl -s localhost:3000/ask | grep -o "Connect wallet\|Disconnect"` → `1 Connect wallet`, 0 Disconnect. Server payload is unambiguously the disconnected branch.
+- Reload `/ask` and `/activity` with wallet connected → console holds only the React-DevTools info line and `[HMR] connected`. **0 errors, 0 exceptions**; devtools badge back to plain "N".
+- `npx tsc --noEmit` clean; `next build` exit 0, 12/12 static pages.
+
+**Residual, stated honestly.** First paint still shows "Connect wallet" and swaps to the address once the injected connector reconnects. That swap is unavoidable — the server cannot know a browser wallet's state before JS runs. What changed is that it is now an ordinary client update instead of a hydration error that threw away the nav.
+
+**Guard for next time.** Console checks must be run **with a wallet connected**; the disconnected path exercises neither branch of `WalletConnect`.
+
+---
+
 ## MANUAL TEST GUIDE (judges — click and look, ~5 minutes)
 
 1. Open **https://askbounty.vercel.app** on desktop or phone.

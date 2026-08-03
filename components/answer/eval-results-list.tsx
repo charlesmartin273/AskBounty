@@ -37,30 +37,33 @@ export function EvalResultsList({
   };
 
   return (
-    <div className="space-y-2 text-sm">
+    <div className="t-body-14 space-y-2">
       {results?.map((r) => (
         <div key={r.check} className="flex gap-2">
-          <span className={r.pass ? "text-green-600" : "text-red-600"}>
+          {/* Per-check verdicts use the state palette, never brand red. */}
+          <span className={r.pass ? "text-success" : "text-fail"}>
             {r.pass ? "✓" : "✗"}
           </span>
           <span>
-            <span className="font-mono text-xs">{r.check}</span>{" "}
-            <span className="text-muted-foreground">- {r.detail}</span>
+            <span className="t-hash text-ink">{r.check}</span>{" "}
+            <span className="text-muted-ink">- {r.detail}</span>
           </span>
         </div>
       ))}
-      {failReason && <p className="text-red-600">{failReason}</p>}
+      {failReason && <p className="text-fail">{failReason}</p>}
       {error && (
-        <div className="rounded-md border border-amber-400 bg-amber-50 p-3">
-          <p className="font-medium text-amber-800">Evaluation pending, retrying</p>
-          <p className="mt-1 break-all text-xs text-amber-800">
+        <div className="rounded-lg border border-pending-line bg-pending-bg p-4">
+          <p className="t-body-14-medium text-pending">Evaluation pending, retrying</p>
+          <p className="t-hash mt-1 break-all text-muted-ink">
             LLM error ({error.code}): {error.message}
             {error.retryable ? " - retry should succeed." : " - needs a config fix or manual retry."}
           </p>
           <Button size="sm" variant="outline" className="mt-2" disabled={retrying} onClick={retry}>
             {retrying ? "Retrying…" : "Retry evaluation"}
           </Button>
-          {retryError && <p className="mt-1 break-all text-xs text-red-600">{retryError}</p>}
+          {retryError && (
+            <p className="t-body-12-medium mt-1 break-all text-fail">{retryError}</p>
+          )}
         </div>
       )}
     </div>

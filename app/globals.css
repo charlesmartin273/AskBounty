@@ -2,129 +2,492 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* The `dark:` variant stays declared so existing shadcn primitives keep
+   compiling, but no element ever carries `.dark` - AskBounty is light-only
+   (design-system.md §7 decision 1). */
 @custom-variant dark (&:is(.dark *));
 
+/* ==========================================================================
+   AskBounty design tokens
+   Design language per docs/design-system.md (extracted from the Orionix
+   reference). Light-only, cream paper + ink, one brand red, three families.
+   ========================================================================== */
+
 @theme inline {
+  /* --- Brand palette (design-system.md §1.1) --- */
+  --color-cream: #f9f8f6; /* page background - warm off-white, not #fff  */
+  --color-paper: #ffffff; /* card / raised surface                        */
+  --color-ink: #141414; /* primary text - near black, not #000          */
+  --color-muted-ink: #656565; /* secondary text                               */
+  --color-faint: #a4a4a4; /* tertiary text: dates, counters, disabled     */
+  --color-brand: #ff0000; /* BRAND accent only - dots, links, emphasis.
+                                   never used to signal state (decision 2)    */
+
+  /* --- Hairlines, 4 steps of black alpha (design-system.md §1.2) --- */
+  --color-line: rgb(0 0 0 / 0.04);
+  --color-line-2: rgb(0 0 0 / 0.06);
+  --color-line-3: rgb(0 0 0 / 0.08);
+  --color-line-4: rgb(0 0 0 / 0.1);
+  --color-line-inv: rgb(255 255 255 / 0.1);
+  --color-line-inv-2: rgb(255 255 255 / 0.06);
+  --color-on-dark-muted: rgb(255 255 255 / 0.64);
+
+  /* --- Money-state palette (design-system.md §1.3, approved) ---
+     Deliberately low-saturation so it never competes with the brand red.
+     Maps to the question/payout state machine:
+       paid / accepted        -> success
+       open / pending / payout_pending -> pending
+       failed / payout_failed -> fail
+       expired / refunded     -> neutral                                     */
+  --color-success: #1a7f4b;
+  --color-success-bg: rgb(26 127 75 / 0.08);
+  --color-success-line: rgb(26 127 75 / 0.22);
+
+  --color-pending: #8a6100;
+  --color-pending-bg: rgb(138 97 0 / 0.08);
+  --color-pending-line: rgb(138 97 0 / 0.22);
+
+  --color-fail: #a3312a; /* muted brick - visibly NOT the brand red */
+  --color-fail-bg: rgb(163 49 42 / 0.08);
+  --color-fail-line: rgb(163 49 42 / 0.22);
+
+  --color-neutral-state: #656565;
+  --color-neutral-state-bg: rgb(0 0 0 / 0.05);
+  --color-neutral-state-line: rgb(0 0 0 / 0.12);
+
+  /* --- Type families (design-system.md §2.1) --- */
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-heading: var(--font-display);
+
+  /* --- Radii (design-system.md §4.1) --- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px; /* default card */
+  --radius-2xl: 32px;
+  --radius-3xl: 40px;
+  --radius-4xl: 48px;
+  --radius-pill: 999px;
+
+  /* --- Shadow (design-system.md §4.2) ---
+     Only buttons lift off the page. Cards separate by colour contrast
+     (#ffffff on #f9f8f6), never by shadow. */
+  --shadow-button:
+    0 1px 1px 0 rgb(0 0 0 / 0.12), 0 1.5px 3px 0 rgb(0 0 0 / 0.2),
+    0 4px 8px 0 rgb(0 0 0 / 0.2), 0 12px 24px -6px rgb(0 0 0 / 0.3);
+  --shadow-overlay: 0 12px 32px -8px rgb(0 0 0 / 0.18);
+
+  /* --- shadcn bridge: keeps every existing ui/ primitive coherent
+         with the palette without editing the components themselves. --- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --background: #f9f8f6;
+  --foreground: #141414;
+  --card: #ffffff;
+  --card-foreground: #141414;
+  --popover: #ffffff;
+  --popover-foreground: #141414;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* primary is INK, not the brand red - the red is an accent, never a fill */
+  --primary: #141414;
+  --primary-foreground: #f9f8f6;
+  --secondary: #ffffff;
+  --secondary-foreground: #141414;
+
+  --muted: rgb(0 0 0 / 0.04);
+  --muted-foreground: #656565;
+  --accent: rgb(0 0 0 / 0.04);
+  --accent-foreground: #141414;
+
+  /* shadcn's `destructive` drives form validation, which is a STATE,
+     so it points at the muted brick - not the brand red. */
+  --destructive: #a3312a;
+
+  --border: rgb(0 0 0 / 0.06);
+  --input: rgb(0 0 0 / 0.08);
+  --ring: rgb(0 0 0 / 0.1);
+  --radius: 24px;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 100vw counts the classic scrollbar, so full-bleed strips (w-screen)
+       overhang the document by the scrollbar width and spawn a phantom
+       horizontal scrollbar. clip - not hidden - drops that overflow without
+       turning the page into a horizontal scroll container. */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: rgb(0 0 0 / 0.08);
+  }
+}
+
+/* ==========================================================================
+   Typography presets (design-system.md §2)
+
+   Display ladder rule: line-height = size + 4px, letter-spacing = size x -0.04.
+   Fraunces runs through its variable axes - "WONK" 1 and "SOFT" 100 are what
+   give the headings their character; dropping them loses the whole voice.
+   ========================================================================== */
+
+@layer components {
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+  }
+
+  .t-display-72 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 72px;
+    line-height: 76px;
+    letter-spacing: -2.88px;
+    font-variation-settings: "opsz" 72, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  .t-display-56 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 56px;
+    line-height: 60px;
+    letter-spacing: -2.24px;
+    font-variation-settings: "opsz" 72, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  .t-display-48 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 48px;
+    line-height: 52px;
+    letter-spacing: -1.92px;
+    font-variation-settings: "opsz" 48, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  /* 40px is the ceiling for in-app pages (design-system.md §7) */
+  .t-display-40 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 40px;
+    line-height: 44px;
+    letter-spacing: -1.6px;
+    font-variation-settings: "opsz" 40, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  .t-display-32 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 32px;
+    line-height: 36px;
+    letter-spacing: -1.28px;
+    font-variation-settings: "opsz" 32, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  .t-display-24 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 24px;
+    line-height: 28px;
+    letter-spacing: -0.96px;
+    font-variation-settings: "opsz" 24, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  .t-display-20 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-feature-settings: "ss01" on;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.8px;
+    font-variation-settings: "opsz" 20, "wght" 350, "SOFT" 100, "WONK" 1;
+  }
+
+  /* --- Inter body scale: only weights 400 and 500 exist in this system --- */
+  .t-body-16 {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.32px;
+    font-weight: 400;
+  }
+  .t-body-16-medium {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.32px;
+    font-weight: 500;
+  }
+  .t-body-14 {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.28px;
+    font-weight: 400;
+  }
+  .t-body-14-medium {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.28px;
+    font-weight: 500;
+  }
+  .t-body-12-medium {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.24px;
+    font-weight: 500;
+  }
+
+  /* --- Geist Mono: the only preset with POSITIVE tracking + uppercase --- */
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.36px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* --- Mono for money & chain data (decision 3): USDC amounts, wallet
+         addresses, tx hashes. `tabular-nums` keeps countdowns and amounts
+         from jittering as digits change. --- */
+  .t-num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.1px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .t-num-lg {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 28px;
+    letter-spacing: -0.4px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Code inside answers and question bodies. Mono like t-hash, but a much
+     roomier line-height: this is read as prose, not scanned as an id. */
+  .t-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  /* Addresses / hashes: no negative tracking, they must stay scannable. */
+  .t-hash {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ==========================================================================
+   Motion + utilities (design-system.md §5.7)
+   Every transition in this system uses the same easing curve.
+   ========================================================================== */
+
+@layer utilities {
+  .ease-brand {
+    transition-timing-function: cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  /* Scroll-reveal: starts 24px low + transparent, settles on enter. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.8s cubic-bezier(0.44, 0, 0.56, 1),
+      transform 0.8s cubic-bezier(0.44, 0, 0.56, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Blur-in reveal variant (Orionix logo rows / reel poster). */
+  .reveal-blur {
+    opacity: 0;
+    filter: blur(10px);
+    transition:
+      opacity 0.8s cubic-bezier(0.44, 0, 0.56, 1),
+      filter 0.8s cubic-bezier(0.44, 0, 0.56, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-blur[data-visible="true"] {
+    opacity: 1;
+    filter: blur(0px);
+  }
+
+  /* Directional / scale / plain-fade variants so consecutive sections
+     don't all repeat the same move. Same 800ms curve everywhere. */
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .reveal-fade {
+    opacity: 0;
+    transition:
+      opacity 0.8s cubic-bezier(0.44, 0, 0.56, 1),
+      transform 0.8s cubic-bezier(0.44, 0, 0.56, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-left {
+    transform: translateX(-32px);
+  }
+  .reveal-right {
+    transform: translateX(32px);
+  }
+  .reveal-scale {
+    transform: scale(0.95);
+  }
+  .reveal-left[data-visible="true"],
+  .reveal-right[data-visible="true"],
+  .reveal-scale[data-visible="true"],
+  .reveal-fade[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Mount entrances for above-the-fold content - pure CSS, no observer.
+     `both` keeps the from-state during the delay, so nothing flashes. */
+  .animate-enter {
+    animation: askbounty-enter-up 0.8s cubic-bezier(0.44, 0, 0.56, 1) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+  .animate-enter-down {
+    animation: askbounty-enter-down 0.8s cubic-bezier(0.44, 0, 0.56, 1) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /* Infinite marquee: content is duplicated once, loop travels -50%. */
+  .animate-marquee-x {
+    animation: askbounty-marquee-x var(--marquee-duration, 32s) linear infinite;
+  }
+
+  /* Hero flow line draws itself in after the headline lands. */
+  .animate-flow-draw {
+    stroke-dasharray: 3200;
+    stroke-dashoffset: 3200;
+    animation: askbounty-flow-draw 1.8s cubic-bezier(0.44, 0, 0.56, 1) 0.9s forwards;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes askbounty-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes askbounty-enter-down {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes askbounty-marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes askbounty-flow-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-blur,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .reveal-fade {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .animate-enter,
+  .animate-enter-down,
+  .animate-marquee-x {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .animate-flow-draw {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
   }
 }
