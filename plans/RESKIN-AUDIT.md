@@ -173,7 +173,71 @@ dev  seed new open question q9x588a9hl3i -> appears on dev /browse
 prod /browse grep q9x588a9hl3i         -> 0 matches            (isolated)
 ```
 
-## 9. Reskin coverage (tokens → components → route groups → pages)
+## 9. Production deploy + live verification
+
+Merged `reskin-orionix` → `master` as a **fast-forward, zero conflicts**
+(master had no commits since the branch point). Pushed `310e025..47165c5`,
+deployed via `vercel deploy --prod` (the repo is not GitHub-connected to
+Vercel — Phase 5 documented this; deploys go through the CLI).
+
+```
+deployment : dpl_DDxKATzczo4jxyyqZkeS5vzcq9F4   target=production  READY
+alias      : askbounty.vercel.app → that deployment (vercel inspect)
+```
+
+**Production env still points at the production database.** Checked before
+deploying, since `.env.local` now points at dev:
+- `vercel env ls production` — all three Supabase vars last written 10d ago,
+  i.e. before the split; no `vercel env add/rm` was ever run.
+- `.env.local` is gitignored and untracked, and `vercel deploy` does not
+  upload it — production env comes from project settings.
+- Behavioural cross-check (the conclusive one):
+
+| Row | Production | Dev |
+|---|---|---|
+| `qod6hnxbr3yx` (prod-only) | serves it | not found |
+| `q9x588a9hl3i` (dev-only) | not found | serves it |
+
+Note: `vercel env pull` masks these values as `[SENSITIVE]`, so the literal
+ref string could not be printed from the CLI; the evidence above is
+behaviour + metadata rather than a direct read.
+
+**Live money flow on production** (`scripts/prod-smoke-money-flow.ts`, runs
+entirely over the public HTTP API + chain so it needs no prod DB
+credentials):
+```
+question : https://askbounty.vercel.app/q/qpm00dsz347u   job 165375, 1 USDC
+complete : 0x46e76bfb81733aec01c14856a4c9bbb70cbd445cb88826e719f811cb85caf4f8
+forward  : 0x1cb3aa41f94c4cca8db68f42c3c20ecc3a755a1622aaaeafa3549d8ca47b3df0
+```
+Decoded onchain:
+```
+complete: escrow 0x0747EEf0… -> agent 0x8065E80A… = 1.000000 USDC
+forward : agent  0x8065E80A… -> winner 0x072c3677… = 1.000000 USDC
+```
+Agent retained exactly zero. (Arc emits each movement twice — once on the
+native 18-decimal view, once on the 6-decimal ERC-20 at `0x3600…0000` — same
+single transfer, not two.)
+
+**Anonymous checks** (plain `curl`: no cookies, no wallet, no JS — the
+strictest "logged out" test for server-rendered content):
+
+| Link | HTTP | State |
+|---|---|---|
+| `/q/qmtplkbb783o` | 200 | Bounty paid, 3 tx links |
+| `/q/qk5nrg5fztw6` | 200 | open, no receipt (as intended) |
+| `/q/q3g982tmydva` | 200 | Bounty refunded to the asker, 2 tx links |
+| `/browse`, `/ask`, `/activity` | 200 | correct titles; "Launch app" → `/browse` |
+
+**Build identity.** CLI deploys carry no git metadata, so identity is proven
+by content fingerprint — strings that exist in `47165c5` and in **no** prior
+commit, all served by production right now: "Check it yourself", "The number
+you see", "Two ways this ends", "What we do not", "Your criteria", "Under the
+hood". The under-the-hood section also renders the chain constants imported
+from `lib/chain/config`. Landing HTML is 153,695 bytes versus a far smaller
+pre-reskin page. Working tree was clean at `47165c5` when the deploy ran.
+
+## 10. Reskin coverage (tokens → components → route groups → pages)
 
 | Layer | Status |
 |---|---|
@@ -184,7 +248,7 @@ prod /browse grep q9x588a9hl3i         -> 0 matches            (isolated)
 | `/`, `/browse`, `/ask`, `/activity`, `/q/[id]`, `/_not-found`, `error.tsx` | Done, all with loading skeletons where missing before (`/ask`, `/activity` added this audit) |
 | `components/ui/*` (shadcn primitives) | Swept to `t-*` scale; `input`/`textarea` intentionally kept at 16px (iOS zoom guard, commented in file); `button size=sm` (13px) and `badge` (11px) intentionally between scale steps (commented) |
 
-## 10. Outstanding / non-blocking
+## 11. Outstanding / non-blocking
 
 - Local machine clock is ~21s behind real time — cosmetic for humans, but
   will keep tripping any cooldown-timed script run locally. Not a blocker;
