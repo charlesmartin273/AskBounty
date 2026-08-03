@@ -1,6 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2775CA"/>
-  <text x="32" y="44" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="bold" fill="#ffffff" text-anchor="middle">?</text>
-  <circle cx="46" cy="18" r="11" fill="#7CF2C1"/>
-  <text x="46" y="23" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#0b3d2c" text-anchor="middle">$</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AskBounty">
+  <!--
+    Favicon = the wordmark lockup compressed to one tile: ink surface, cream
+    glyph, brand-red dot (design-system.md §1.1) - the same three colours as
+    the dark closing panel on the landing page.
+
+    The question mark is drawn as a stroked path, not <text>: favicons get no
+    webfont, so Fraunces is unavailable and a font-name fallback renders
+    differently per platform. Geometry keeps the tab icon and the iOS icon
+    identical.
+
+    app/apple-icon.png mirrors this file - same path scaled 64 -> 180, minus
+    the corner radius (iOS applies its own mask). Next.js only accepts
+    png/jpg for apple-icon, hence the raster. Regenerate it from this
+    geometry if the mark ever changes.
+  -->
+  <rect width="64" height="64" rx="14" fill="#141414"/>
+  <g fill="none" stroke="#f9f8f6" stroke-width="6" stroke-linecap="round">
+    <path d="M22.5 24.5a9.5 9.5 0 1 1 9.5 9.5v4.5"/>
+  </g>
+  <circle cx="32" cy="48" r="3.6" fill="#f9f8f6"/>
+  <!-- Brand dot, top right - the mark that trails "AskBounty" in the nav -->
+  <circle cx="50" cy="15" r="6" fill="#ff0000"/>
 </svg>
