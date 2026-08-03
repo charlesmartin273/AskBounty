@@ -168,8 +168,9 @@ export default function Landing() {
       {/* Trade-offs stated before the FAQ starts answering objections */}
       <LimitationsSection />
 
-      {/* FAQ - answered before the closing CTA asks for the click */}
-      <FaqSection />
+      {/* Verifiable spec sheet - the trade-offs above name the trust
+          assumptions, this hands over the addresses to check them with */}
+      <UnderTheHoodSection />
 
       {/* Trust panel + closing CTA - the one dark surface on the page.
           No bottom padding: the fused wordmark forms the bottom edge. */}
@@ -219,8 +220,9 @@ export default function Landing() {
         </Reveal>
       </section>
 
-      {/* Verifiable spec sheet - last stop before the footer */}
-      <UnderTheHoodSection />
+      {/* FAQ - last stop before the footer, catching whatever the sections
+          above left unanswered */}
+      <FaqSection />
 
       {/* Footer line */}
       <footer className="flex flex-col items-start justify-between gap-2 border-t border-line-3 px-2 pt-6 min-[810px]:flex-row min-[810px]:items-center">
