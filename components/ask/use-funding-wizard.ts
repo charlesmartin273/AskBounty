@@ -109,6 +109,10 @@ export function useFundingWizard(questionId: string) {
         // Review H1: if a previous attempt already funded the escrow (finalize
         // failed mid-flight), skip straight to finalize - re-running fund
         // would revert and strand the user.
+        // busy() must fire before any RPC read - these can take several
+        // seconds under rate limiting, and without it the button looks
+        // unresponsive (still enabled, stale label) while they run.
+        busy("Checking escrow status…");
         const jobNow = await publicClient.readContract({
           address: AGENTIC_COMMERCE, abi: agenticCommerceAbi,
           functionName: "getJob", args: [BigInt(question.jobId!)],
