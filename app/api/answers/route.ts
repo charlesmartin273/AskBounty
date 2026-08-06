@@ -83,7 +83,12 @@ export async function POST(req: Request) {
     processed = await processAnswerEvaluation(
       row,
       question.criteria as unknown as Criteria,
-      { title: question.title, body: question.body, deadline: question.deadline },
+      {
+        title: question.title,
+        body: question.body,
+        referenceNotes: question.reference_notes,
+        deadline: question.deadline,
+      },
     );
   } catch (err) {
     // Review M3: an unexpected pipeline throw must never leave the answer

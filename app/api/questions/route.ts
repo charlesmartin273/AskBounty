@@ -32,6 +32,12 @@ export async function POST(req: NextRequest) {
     return jsonError(400, "body must be 1-20000 chars");
   }
 
+  // Optional private ground truth for the evaluator (PRD-ERRATA E7).
+  const referenceNotes = String(body.referenceNotes ?? "").trim();
+  if (referenceNotes.length > 5_000) {
+    return jsonError(400, "referenceNotes must be at most 5000 chars");
+  }
+
   let budgetRaw: bigint;
   try {
     budgetRaw = usdcToRaw(String(body.budget ?? ""));
@@ -62,6 +68,7 @@ export async function POST(req: NextRequest) {
     body: questionBody,
     budget: rawToUsdc(budgetRaw),
     criteria,
+    reference_notes: referenceNotes || null,
     status: "draft",
     deadline: deadline.toISOString(),
     net_payout: rawToUsdc(netRaw),

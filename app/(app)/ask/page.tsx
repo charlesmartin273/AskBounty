@@ -31,6 +31,7 @@ export default function AskPage() {
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [referenceNotes, setReferenceNotes] = useState("");
   const [budget, setBudget] = useState("20");
   const [deadline, setDeadline] = useState(defaultDeadline);
   const [criteria, setCriteria] = useState<Criteria>({
@@ -62,7 +63,7 @@ export default function AskPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          askerAddress: address, title, body, budget,
+          askerAddress: address, title, body, budget, referenceNotes,
           deadline: new Date(deadline).toISOString(), criteria,
         }),
       });
@@ -119,6 +120,16 @@ export default function AskPage() {
             <Textarea id="body" rows={8} value={body}
               placeholder="Describe the problem, constraints, what a good answer covers…"
               onChange={(e) => setBody(e.target.value)} />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="referenceNotes">Reference notes (private, optional)</Label>
+            <Textarea id="referenceNotes" rows={4} value={referenceNotes} maxLength={5000}
+              placeholder="Facts the AI reviewer should treat as correct, e.g. official docs links, exact values…"
+              onChange={(e) => setReferenceNotes(e.target.value)} />
+            <p className="t-body-12-medium text-muted-ink">
+              Only the AI reviewer sees this - answerers never do. Use it when the
+              answer depends on facts newer or more niche than the model knows.
+            </p>
           </div>
           <div className="flex flex-wrap gap-4">
             <div className="space-y-1">

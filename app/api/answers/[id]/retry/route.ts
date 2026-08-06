@@ -75,7 +75,12 @@ export async function POST(
   const processed = await processAnswerEvaluation(
     answer,
     question.criteria as unknown as Criteria,
-    { title: question.title, body: question.body, deadline: question.deadline },
+    {
+      title: question.title,
+      body: question.body,
+      referenceNotes: question.reference_notes,
+      deadline: question.deadline,
+    },
   );
   return NextResponse.json({
     answer: toPublicAnswer({

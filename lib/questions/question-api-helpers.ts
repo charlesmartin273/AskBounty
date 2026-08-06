@@ -11,6 +11,9 @@ export interface QuestionRow {
   body: string;
   budget: string | number; // Postgres NUMERIC arrives as a JSON number
   criteria: Record<string, unknown>;
+  // PRIVATE (PRD-ERRATA E7): asker-supplied ground truth for the evaluator.
+  // Never add this to toPublicQuestion() - it would hand answerers the answer.
+  reference_notes: string | null;
   job_id: number | null;
   status: "draft" | "open" | "answered" | "expired" | "refunded";
   deadline: string;
