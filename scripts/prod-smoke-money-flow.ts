@@ -117,5 +117,5 @@ async function main() {
 
 main().catch((e) => {
   console.error("SMOKE FAILED:", e);
-  process.exit(1);
+  process.exitCode = 1;
 });

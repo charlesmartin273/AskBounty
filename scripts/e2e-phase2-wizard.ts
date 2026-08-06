@@ -136,10 +136,10 @@ async function main() {
   const failed = results.filter((r) => r.startsWith("FAIL")).length;
   console.log(`\n===== PHASE 2 E2E: ${results.length - failed}/${results.length} PASS =====`);
   console.log(`question: ${BASE}/q/${questionId}`);
-  if (failed > 0) process.exit(1);
+  if (failed > 0) process.exitCode = 1;
 }
 
 main().catch((err) => {
   console.error("E2E FAILED:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

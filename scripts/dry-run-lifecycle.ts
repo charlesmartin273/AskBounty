@@ -86,7 +86,8 @@ async function main() {
       `\nABORT: fund the ASKER wallet with Arc Testnet USDC (https://faucet.circle.com, network "Arc Testnet", one 20 USDC drip is enough):\n` +
         `  asker ${asker.account.address} needs >= ${usdcFmt(BUDGET * 4n)} (budget + gas + agent top-up)\nThen re-run this script.`,
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   // Single-faucet-drip flow: asker tops up the agent's gas so only one wallet
   // ever needs manual funding (gas on Arc is USDC).
@@ -171,5 +172,5 @@ async function main() {
 
 main().catch((err) => {
   console.error("\nDRY-RUN FAILED:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -136,10 +136,10 @@ async function main() {
 
   const failed = results.filter((r) => r.startsWith("FAIL")).length;
   console.log(`\n===== EDGE CASES: ${results.length - failed}/${results.length} PASS =====`);
-  if (failed > 0) process.exit(1);
+  if (failed > 0) process.exitCode = 1;
 }
 
 main().catch((err) => {
   console.error("EDGE-CASE RUN FAILED:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

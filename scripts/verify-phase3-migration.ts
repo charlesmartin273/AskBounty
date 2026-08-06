@@ -19,7 +19,7 @@ async function main() {
     budget: "1", criteria: {}, status: "open",
     deadline: new Date(Date.now() + 60000).toISOString(),
   });
-  if (qErr) { console.log(`PROBE-ERROR question insert: ${qErr.message}`); process.exit(2); }
+  if (qErr) { console.log(`PROBE-ERROR question insert: ${qErr.message}`); process.exitCode = 2; return; }
 
   // status CHECK probe
   const { error: badStatus } = await db.from("answers").insert({
@@ -55,4 +55,4 @@ async function main() {
   console.log("cleanup done");
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => { console.error(e); process.exitCode = 1; });

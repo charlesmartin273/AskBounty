@@ -71,12 +71,13 @@ async function main() {
 
   if (leaked) {
     console.error("PROD VERIFY FAILED");
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   console.log("\n===== PROD VERIFY: PASS =====");
 }
 
 main().catch((e) => {
   console.error("PROD VERIFY FAILED:", e);
-  process.exit(1);
+  process.exitCode = 1;
 });

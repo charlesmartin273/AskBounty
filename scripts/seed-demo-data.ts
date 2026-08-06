@@ -209,5 +209,5 @@ async function main() {
 
 main().catch((err) => {
   console.error("SEED FAILED:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -25,7 +25,7 @@ export const record = (name: string, pass: boolean, detail: string) => {
 export function summarize(label: string) {
   const failed = results.filter((r) => r.startsWith("FAIL")).length;
   console.log(`\n===== ${label}: ${results.length - failed}/${results.length} PASS =====`);
-  if (failed > 0) process.exit(1);
+  if (failed > 0) process.exitCode = 1;
 }
 
 export async function api(method: string, path: string, body?: object) {
@@ -198,9 +198,11 @@ export async function preflightAskerBalance(asker: Signer, neededRaw: bigint) {
   const bal = await getUsdcBalance(publicClient, asker.account.address);
   console.log(`[preflight] asker ${asker.account.address} balance ${usdcFmt(bal)}`);
   if (bal < neededRaw) {
-    console.error(
+    // Throw (not process.exit) - this must actually stop the CALLING script,
+    // not just this helper, and every caller's main().catch() already reports
+    // and sets the exit code.
+    throw new Error(
       `ABORT: asker needs >= ${usdcFmt(neededRaw)}. Fund via https://faucet.circle.com (network "Arc Testnet") and re-run.`,
     );
-    process.exit(1);
   }
 }

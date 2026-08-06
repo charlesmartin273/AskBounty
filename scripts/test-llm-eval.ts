@@ -69,5 +69,5 @@ async function main() {
 
 main().catch((err) => {
   console.error("EVAL TEST FAILED:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });
