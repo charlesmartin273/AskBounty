@@ -9,6 +9,23 @@ const MODEL = "gemini-3.5-flash";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 const TIMEOUT_MS = 30_000;
 
+// Transient-failure resilience: Gemini free tier returns 429/503 under load
+// often enough to make single-shot calls flaky (in tests and prod alike).
+// Retry only classes already marked `retryable` (rate_limited/timeout/
+// provider_error) with exponential backoff + jitter; auth/bad_response never
+// retry since retrying can't fix them.
+const MAX_ATTEMPTS = 3;
+const BASE_DELAY_MS = 1_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function backoffDelay(attempt: number): number {
+  const exp = BASE_DELAY_MS * 2 ** (attempt - 1);
+  return exp + Math.random() * BASE_DELAY_MS; // full jitter on top of exponential base
+}
+
 // Failure classification for the eval pipeline (Phase 3 requirement): any
 // LlmEvalError => answer shows "evaluation pending, retrying" + manual retry
 // button. NEVER silently hang, NEVER map a failure to "accepted".
@@ -74,6 +91,23 @@ export async function callLlm<T = unknown>(args: {
     throw new LlmEvalError("auth", "GEMINI_API_KEY is not set", false);
   }
 
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      return await callLlmOnce<T>(args, apiKey);
+    } catch (err) {
+      const canRetry = err instanceof LlmEvalError && err.retryable && attempt < MAX_ATTEMPTS;
+      if (!canRetry) throw err;
+      await sleep(backoffDelay(attempt));
+    }
+  }
+  // Unreachable: loop always returns or throws on its final attempt.
+  throw new LlmEvalError("provider_error", "retry loop exhausted unexpectedly", false);
+}
+
+async function callLlmOnce<T>(
+  args: { system: string; user: string; schema?: object },
+  apiKey: string,
+): Promise<T> {
   let res: Response;
   try {
     res = await fetch(API_URL, {
