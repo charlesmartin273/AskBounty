@@ -37,10 +37,10 @@ yarn-error.log*
 # vercel
 .vercel
 
-# personal claude toolkit (not project code) — only workflow rules are tracked
+# personal claude toolkit (not project code) — nothing under it is tracked
 .claude/*
-!.claude/rules/
-.claude/.env.example
+CLAUDE.md
+AGENTS.md
 
 # typescript
 *.tsbuildinfo
