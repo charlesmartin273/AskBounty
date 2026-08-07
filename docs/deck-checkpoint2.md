@@ -51,7 +51,7 @@ Asker ──fund──► Escrow (ERC-8183)          Answerer
 - Every payout shows a **dual-transaction receipt** on Arcscan: escrow→agent and agent→winner - anyone can verify **the agent kept nothing**.
 - 5 phases, each gated by a written audit: **16 E2E suites, 130+ assertions - all against live testnet, zero mocks.**
 
-> 📷 Image: /q/qmtplkbb783o - the green "Bounty paid: 2 USDC" receipt with both Arcscan links (reuse docs/screenshots/payout-receipt.png).
+> 📷 Image: /q/qmtplkbb783o - the green "Bounty paid: 2 USDC" receipt with both Arcscan links.
 
 ---
 
@@ -62,7 +62,7 @@ Asker ──fund──► Escrow (ERC-8183)          Answerer
 - **Fails closed when unsure** - bounty stays in escrow and refunds at expiry; funds are never misdirected.
 - Battle-tested: ~18 audit/review findings fixed (incl. a prompt-injection vector and a payout race), 2 found by human manual testing - every money-path fix is locked by a permanent regression test.
 
-> 📷 Image: /q/qmtplkbb783o - failed answer with red per-check reasons next to the accepted answer's green checks (reuse docs/screenshots/eval-feedback.png).
+> 📷 Image: /q/qmtplkbb783o - failed answer with red per-check reasons next to the accepted answer's green checks.
 
 ---
 

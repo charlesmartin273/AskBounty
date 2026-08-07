@@ -18,12 +18,6 @@ Three pre-seeded questions show every state of the money flow:
 
 To go through the full asker flow yourself: get Arc Testnet USDC from https://faucet.circle.com (network "Arc Testnet"), then [ask a question](https://askbounty.vercel.app/ask). USDC is also the gas token on Arc - one faucet visit covers both.
 
-## Screenshots
-
-| Ask + criteria builder | Evaluation feedback | Payout receipt (2 tx) |
-|---|---|---|
-| ![Ask flow](docs/screenshots/ask-flow.png) | ![Eval feedback](docs/screenshots/eval-feedback.png) | ![Receipt](docs/screenshots/payout-receipt.png) |
-
 ## How it works
 
 ```
